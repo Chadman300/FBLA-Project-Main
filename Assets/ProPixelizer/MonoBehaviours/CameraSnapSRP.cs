@@ -43,7 +43,7 @@ namespace ProPixelizer
         /// <summary>
         /// Size of a pixel in world units
         /// </summary>
-        public float PixelSize = 0.032f;
+        public float PixelSize = 0.033f;
 
         public void Update()
         {

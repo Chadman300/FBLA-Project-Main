@@ -10,11 +10,21 @@ public class GenerateRooms : MonoBehaviour
     public float roomSpacing = 10f; // Minimum spacing between room centers
     public LayerMask roomLayer;     // Layer for room collision checking
 
+    [Header("Generation Walls")]
+    public GameObject doorPrefab;
+    public GameObject wallPrefab;
+    public float doorPositionOffset = 10;
+    public Vector3 doorCenteredOffset = new Vector3(0, 0, -8);
+
     [Header("Generation Bounds")]
     public Vector3 generationStartPosition = Vector3.zero; // Start point of the level
     public float positionIncrementRange = 30f; // Random offsets
 
     [HideInInspector] public List<GameObject> generatedRooms = new List<GameObject>();
+    [HideInInspector] public List<GameObject> generatedDoors = new List<GameObject>();
+
+    private Vector3 oldDirection = Vector3.zero;
+    private RoomController selectedController;
 
     void Start()
     {
@@ -30,18 +40,25 @@ public class GenerateRooms : MonoBehaviour
             // Randomly choose a room prefab
             GameObject selectedPrefab = roomPrefabs[Random.Range(0, roomPrefabs.Length)];
 
+            //get rooms controller
+            if (!selectedPrefab.TryGetComponent<RoomController>(out selectedController))
+                Debug.LogError($"Room Prefab: {selectedPrefab}, does not have a RoomControllerScript!");
+
             // Randomly increment position
-            Vector3 randomIncrement = Vector3.zero;
+            Vector3 randomDirection = Vector3.zero;
             var random = Random.Range(0, 4);
 
             if (random == 0)
-                randomIncrement = new Vector3(positionIncrementRange, 0, 0);
+                randomDirection = transform.forward;
             else if (random == 1)
-                randomIncrement = new Vector3(-positionIncrementRange, 0, 0);
+                randomDirection = -transform.forward;
             else if (random == 2)
-                randomIncrement = new Vector3(0, 0, positionIncrementRange);
+                randomDirection = transform.right;
             else if (random == 3)
-                randomIncrement = new Vector3(0, 0, -positionIncrementRange);
+                randomDirection = -transform.right;
+
+            oldDirection = randomDirection;
+            Vector3 randomIncrement = randomDirection * selectedController.roomIncrementSize;
 
             Vector3 proposedPosition = currentPosition + randomIncrement;
 
@@ -53,8 +70,33 @@ public class GenerateRooms : MonoBehaviour
                 newRoom.transform.parent = transform; // Optional: Keep hierarchy clean
                 generatedRooms.Add(newRoom);
 
+                //get instanciated rooms controller again
+                selectedController = newRoom.GetComponent<RoomController>();
+
                 // Update current position for the next room
                 currentPosition = proposedPosition;
+
+                //Add doors and fill walls
+                foreach (Transform point in selectedController.doorPoints)
+                {
+                    GameObject spawnedWall = null;
+
+                    //spawn wall or door
+                    if(-randomDirection == point.forward)
+                    {
+                        spawnedWall = Instantiate(selectedController.doorPrefab);
+                    }
+                    else
+                    {
+                        //spawnedWall = Instantiate(selectedController.wallPrefab);
+                    }
+
+
+                    //set vars
+                    spawnedWall.transform.position = point.position;
+                    spawnedWall.transform.rotation = point.rotation;
+                    spawnedWall.transform.parent = newRoom.transform;
+                }
             }
             else
             {

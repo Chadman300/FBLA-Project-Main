@@ -12,7 +12,7 @@ public class GenerateRoomsEditor : Editor
         GenerateRooms levelGenerator = (GenerateRooms)target;
 
         // Add a button to the inspector
-        if (Application.isPlaying ) 
+        if (Application.isPlaying) 
         {
             if (GUILayout.Button("Generate Level"))
             {
@@ -24,6 +24,16 @@ public class GenerateRoomsEditor : Editor
                 levelGenerator.generatedRooms = new List<GameObject>();
 
                 levelGenerator.GenerateLevel();
+            }
+
+            if (GUILayout.Button("Destroy Level"))
+            {
+                //remove all rooms
+                foreach (GameObject g in levelGenerator.generatedRooms)
+                {
+                    Destroy(g);
+                }
+                levelGenerator.generatedRooms = new List<GameObject>();
             }
         } 
     }
