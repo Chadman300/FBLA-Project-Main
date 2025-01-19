@@ -1,33 +1,31 @@
 using System.Collections;
-using System.Runtime.Serialization.Formatters;
-using Unity.VisualScripting;
-using UnityEditor;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
+using UnityEngine.Rendering;
+using Controls;
+using System;
+using UnityEngine.UI;
+using UnityEditor.Build;
+using MoreMountains.Feedbacks;
+using DG.Tweening;
 
 public class AdvancedRagdollController : MonoBehaviour
 {    
     public AdvancedRagdollSettings settings;
+    public RagdollValuesController ragdollValues;
 
     [Header("Movement")]
-    [SerializeField] private float speed = 250; //forward back speed
+    public float speed = 250; //forward back speed
     [SerializeField] private float rotateTourqe = 15; //left right speed
     [SerializeField] private bool mouseLook = true;
-    [SerializeField] private float jumpForce = 3000;
-    [Range(1, 20)][SerializeField] private float lungeForce = 2;
+    public float jumpForce = 3000;
+    [Range(1, 20)] public float lungeForce = 2;
     public bool isGrounded = false;
 
     private float rotationY = 0;
 
-    [Header("Mouse Look")]
-    [SerializeField] private float lookTourqe = 200; //left right speed
-    [SerializeField] private Camera playerCamera;
-    [SerializeField] private LayerMask lookLayer;
-    [SerializeField] private bool lockYAxis = true;
-
     [Header("Physics Parameters")]
+    public LayerMask whatIsGround;
     [SerializeField] private int limbCollisionLayer = 6;
     [SerializeField] private Rigidbody[] rigidbodies;
     [SerializeField] private ConfigurableJoint[] joints;
@@ -38,7 +36,6 @@ public class AdvancedRagdollController : MonoBehaviour
     [Tooltip("Higher # the more accurate physics interactions are")]
     [SerializeField] private int maxAngularVelocity = 20;
     [Tooltip("Generally dipicts how fast your player can move")]
-
     private Quaternion[] jointsInitialStartRot;
 
     [Header("Balance")]
@@ -50,16 +47,32 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private float rotationTorque = 500;
     public Vector3 TargetDirection { get; set; }
 
-    [Header("Animation")]
-    [SerializeField] private Animator anim;
-    [SerializeField] private Transform[] animTransforms;
-
     [Header("Ragdoll")]
     [SerializeField] private ConfigurableJoint[] legJoints;
     [SerializeField] private float driveStiffness = 90;
     [SerializeField] private float driveStiffnessLegs = 180;
     [Range(1, 15)][SerializeField] private float stiffnessDividend = 4f;
     [Range(1, 15)][SerializeField] private float massDividend = 4f;
+
+    [Space(15)]
+
+    [Header("Health Parameters")]
+    [SerializeField] private float maxHealth = 100f;
+    [SerializeField] private float timeBeforeRegenStarts = 3f;
+    [SerializeField] private float healthValueIncrement = 3;
+    [Tooltip("Increments currentHealth by healthValueIncrement every time of this value")]
+    [SerializeField] private float healthTimeIncrement = 0.1f;
+    [SerializeField] private Slider HealthSlider;
+    private float currentHealth;
+    private Coroutine regeneratingHealth;
+    public static Action<float> OnTakeDamage;
+    public static Action<float> OnDamage;
+    public static Action<float> OnHeal;
+
+    [Header("Stun Parameters")]
+    [SerializeField] private bool canGetStunned = true;
+    [Range(0, 2)][SerializeField] private float stunTimeMultiplyer;
+    [Tooltip("Multiplies stun time when damaged (stunTimeMultiplyer * damage = stunTime)")]
 
     [Header("Attack Paramenters")]
     public LayerMask enemyLayer;
@@ -73,9 +86,11 @@ public class AdvancedRagdollController : MonoBehaviour
     [Range(0, 10)] public float handControl = 1.5f;
     [Tooltip("Hand Stiffness aka masss scale")]
 
+    [Space(15)]
+
     [Header("Grabbing")]
     [SerializeField] private bool canGrab = true;
-    [SerializeField] private bool canRaiseHand = true;
+    public bool canRaiseHand = true;
     [SerializeField] private LayerMask grabbableObjects;
     [SerializeField] private Rigidbody rightHandRb;
     [SerializeField] private Rigidbody leftHandRb;
@@ -88,7 +103,8 @@ public class AdvancedRagdollController : MonoBehaviour
     private GameObject grabbedObjLeft;
 
     [Header("Picking Up")]
-    [SerializeField] private bool canPickUp = true;
+    public bool canPickUpWeapons = true;
+    public bool canPickUpItems = true;
     [SerializeField] private Transform rightHandTransform;
     [SerializeField] private Transform leftHandTransform;
     [SerializeField] private string pickUpTag;
@@ -102,7 +118,19 @@ public class AdvancedRagdollController : MonoBehaviour
     private GameObject leftHandItemObj = null;
     private GameObject rightHandItemObj = null;
 
-    [Space]
+    [Space(15)]
+
+    [Header("Mouse Look")]
+    [SerializeField] private float lookTourqe = 200; //left right speed
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private LayerMask lookLayer;
+    [SerializeField] private bool lockYAxis = true;
+
+    [Header("Animation")]
+    [SerializeField] private Animator anim;
+    [SerializeField] private Transform[] animTransforms;
+
+    [Space(15)]
 
     //input
     private Vector2 currentInput;
@@ -112,6 +140,21 @@ public class AdvancedRagdollController : MonoBehaviour
     private float jumpInputRaw;
 
     private Vector2 mouseP;
+
+    private bool isStunned = false;
+
+    private void OnEnable()
+    {
+        OnTakeDamage += ApplyDamage;
+        currentHealth = maxHealth;
+        HealthSlider.maxValue = maxHealth;
+        HealthSlider.value = currentHealth;
+    }
+
+    private void OnDisable()
+    {
+        OnTakeDamage -= ApplyDamage;
+    }
 
     void Start()
     {
@@ -142,20 +185,32 @@ public class AdvancedRagdollController : MonoBehaviour
 
     private void Update()
     {
+        //dont update if paused
+        if (PauseMenu.isPaused)
+            return;
+
+
         HandleMovementInput();
         HandleLook();
         HandleAnimation();
 
+        //grapping
         if (canGrab)
             TryGrab();
 
-        if (canPickUp)
-            TryPickUp();
+        //pickup (weapons, items)
+        TryPickUp();
 
         //set animimated rots to joints to animate
         for (int i = 0; i < joints.Length; i++)
         {
             ConfigurableJointExtensions.SetTargetRotationLocal(joints[i], animTransforms[i].localRotation, jointsInitialStartRot[i]);
+        }
+
+        //debug
+        if(Input.GetKeyDown(KeyCode.J))
+        {
+            StartCoroutine(RagdollStun(1));
         }
     }
 
@@ -205,7 +260,8 @@ public class AdvancedRagdollController : MonoBehaviour
             hipsRb.AddForce(hipsRb.transform.up * jumpInput * Time.deltaTime, ForceMode.Impulse);
 
             //When grounded stiffen ragdoll joins
-            RagDoll(false);
+            if (!isStunned)
+                RagDoll(false);
         }
         else
         {
@@ -333,19 +389,45 @@ public class AdvancedRagdollController : MonoBehaviour
 
     private void TryPickUp()
     {
-        //right hand
-        if (rightHandUp && !rightHandHasItem)
+        //items
+        if (canPickUpItems)
         {
-            Equip(true, rightHandTransform, rightHandRb);
+            EquipItems();
         }
 
-        //left hand
-        if (leftHandUp && !leftHandHasItem)
+        //weapons
+        if (canPickUpWeapons)
         {
-            Equip(false, leftHandTransform, leftHandRb);
+            //right hand
+            if (rightHandUp && !rightHandHasItem)
+            {
+                Equip(true, rightHandTransform, rightHandRb);
+            }
+
+            //left hand
+            if (leftHandUp && !leftHandHasItem)
+            {
+                Equip(false, leftHandTransform, leftHandRb);
+            }
         }
     }
 
+    private void EquipItems()
+    {
+        GameObject currentObject;
+        ItemController currentItemController;
+
+        Collider[] colliders = Physics.OverlapSphere(hipsRb.transform.position, pickRadius);
+        foreach (Collider collider in colliders)
+        {
+            currentObject = collider.gameObject;
+            if (currentObject.CompareTag(pickUpTag) && currentObject.TryGetComponent<ItemController>(out currentItemController))
+            {
+                ragdollValues.AddItem(currentItemController);
+                currentItemController.grabFeedback?.PlayFeedbacks();
+            }
+        }
+    }
     private void Equip(bool isRightHand, Transform handTransform, Rigidbody rb)
     {
         Collider[] colliders = null;
@@ -368,7 +450,7 @@ public class AdvancedRagdollController : MonoBehaviour
                 currentObject = leftHandItemObj;
             }
 
-            if (currentObject.CompareTag(pickUpTag))
+            if (currentObject.CompareTag(pickUpTag) && !collider.TryGetComponent<ItemController>(out var currentItemController))
             {
                 meeleScript = currentObject.GetComponent<MeeleWeapon>();
                 gunScript = currentObject.GetComponent<GunController>();
@@ -586,11 +668,6 @@ public class AdvancedRagdollController : MonoBehaviour
         }
     }
 
-    private Vector3 vectorM(Vector3 v1, Vector3 v2)
-    {
-        return new Vector3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
-    }
-
     private void RagDoll(bool ragdoll)
     {
         ConfigurableJoint joint; JointDrive yzDrive; JointDrive xDrive;
@@ -665,5 +742,86 @@ public class AdvancedRagdollController : MonoBehaviour
     {
         Gizmos.DrawWireSphere(rightHandTransform.position, pickRadius);
         Gizmos.DrawWireSphere(leftHandTransform.position, pickRadius);
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        currentHealth -= damage;
+        OnDamage?.Invoke(currentHealth);
+
+        //effects
+        //damageFeedBack?.PlayFeedbacks();
+
+        if (currentHealth <= 0)
+            KillPlayer();
+        else if (regeneratingHealth != null)
+            StopCoroutine(regeneratingHealth);
+
+        //stunPlayer
+        if(canGetStunned)
+            StartCoroutine(RagdollStun(damage * stunTimeMultiplyer));
+
+        //start Regen
+        regeneratingHealth = StartCoroutine(RegenerateHealth());
+    }
+
+    private IEnumerator RagdollStun(float stunTime)
+    {
+        //make player ragdoll untill stun times over
+        isStunned = true;
+        RagDoll(true);
+
+        yield return new WaitForSeconds(stunTime);
+
+        isStunned = true;
+        RagDoll(false);
+    }    
+
+    public void ApplyHealth(float health)
+    {
+        currentHealth += health;
+        OnHeal?.Invoke(currentHealth);
+
+        //effects
+        //healFeedBack?.PlayFeedbacks();
+
+        regeneratingHealth = StartCoroutine(RegenerateHealth());
+    }
+
+    public void KillPlayer()
+    {
+        currentHealth = 0;
+
+        if (regeneratingHealth != null)
+            StopCoroutine(regeneratingHealth);
+
+        StartCoroutine(RagdollStun(100));
+
+        //effects
+        //deathFeedBack?.PlayFeedbacks();
+        Debug.Log("dead", gameObject);
+    }
+
+    public IEnumerator RegenerateHealth()
+    {
+        yield return new WaitForSeconds(timeBeforeRegenStarts);
+        WaitForSeconds timeToWait = new WaitForSeconds(healthTimeIncrement);
+
+        while (currentHealth < maxHealth)
+        {
+            currentHealth += healthValueIncrement;
+
+            if (currentHealth > maxHealth)
+                currentHealth = maxHealth;
+
+            OnHeal?.Invoke(currentHealth);
+
+            //effects
+            //regenerateHealthFeedBack?.PlayFeedbacks();
+
+            yield return timeToWait;
+        }
+
+        regeneratingHealth = null;
     }
 }

@@ -84,7 +84,10 @@ public class GunController : MonoBehaviour
 
     private void Update()
     {
-        if(currentShootType == GunShootType.SemiAuto)
+        if (PauseMenu.isPaused)
+            return;
+
+        if (currentShootType == GunShootType.SemiAuto)
         {
             if (Input.GetKeyDown(isRightHand ? KeyCode.Mouse1 : KeyCode.Mouse0))
             {

@@ -16,7 +16,8 @@ public class AdvancedLimbCollision : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (canControllGrounded)
+        //make sure its ground layer
+        if (canControllGrounded && CheckInLayerMask(collision.gameObject, controller.whatIsGround))
         {
             controller.isGrounded = true;
         }
@@ -35,5 +36,10 @@ public class AdvancedLimbCollision : MonoBehaviour
                 Debug.Log(damage);
             }
         }
+    }
+
+    private bool CheckInLayerMask(GameObject obj, LayerMask layerMask)
+    {
+        return (layerMask.value & (1 << obj.layer)) != 0;
     }
 }
