@@ -15,10 +15,12 @@ public class UIManager : MonoBehaviour
 
     [Header("AlertSystem UI")]
     [SerializeField] private TMP_Text popupText;
+    [SerializeField] private TMP_Text popupSubText;
     [SerializeField] private GameObject window;
     [SerializeField] private Animator popupAnimator;
+    [SerializeField] private string popupAnimationName = "AlertPopupAnim";
     [SerializeField] private int QueueMax = 4;
-    private Queue<string> popupQueue; //make it different type for more detailed popups, you can add different types, titles, descriptions etc
+    private Queue<(string, string)> popupQueue; //make it different type for more detailed popups, you can add different types, titles, descriptions etc
     private Coroutine queueChecker;
 
     [Header("Ammo UI")]
@@ -44,7 +46,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         window.SetActive(false);
-        popupQueue = new Queue<string>();
+        popupQueue = new Queue<(string, string)>();
         pauseMenu.SetActive(false);
     }
 
@@ -84,29 +86,32 @@ public class UIManager : MonoBehaviour
         healthSlider.value = currentHealth;
     }
 
-    public void AddToQueue(string text, Color textColor)
+    public void AddToQueue(string text, Color textColor, string subText, Color subTextColor)
     {//parameter the same type as queue
-        if (popupQueue.Count > 0 ? text != popupQueue.Last() : true && popupQueue.Count < QueueMax - 1)
+        if (popupQueue.Count > 0 ? text != popupQueue.Last().Item1 : true && popupQueue.Count < QueueMax - 1)
         {
-            popupQueue.Enqueue(text);
+            popupQueue.Enqueue((text, subText));
             if (queueChecker == null)
-                queueChecker = StartCoroutine(CheckQueue(textColor));
+                queueChecker = StartCoroutine(CheckQueue(textColor, subTextColor));
         }
     }
 
-    private void ShowPopup(string text, Color textColor)
+    private void ShowPopup(string text, Color textColor, string subText, Color subTextColor)
     { //parameter the same type as queue
         window.SetActive(true);
         popupText.text = text;
         popupText.color = textColor;
-        popupAnimator.Play("AlertPopupAnim");
+        popupSubText.text = subText;
+        popupSubText.color = subTextColor;
+        popupAnimator.Play(popupAnimationName);
     }
 
-    private IEnumerator CheckQueue(Color textColor)
+    private IEnumerator CheckQueue(Color textColor, Color subTextColor)
     {
         do
         {
-            ShowPopup(popupQueue.Dequeue(), textColor);
+            var texts = popupQueue.Dequeue();
+            ShowPopup(texts.Item1, textColor, texts.Item2, subTextColor);
             do
             {
                 yield return null;

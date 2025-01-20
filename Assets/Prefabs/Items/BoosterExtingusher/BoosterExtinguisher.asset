@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 193b448c5a0be1e438d1352e770b69e0, type: 3}
   m_Name: BoosterExtinguisher
   m_EditorClassIdentifier: 
-  itemName: BoosterExtinguisher
+  itemName: Booster Can
+  itemDescription: +Jump Force
+  nameColor: {r: 0.94716984, g: 0.24126014, b: 0.24126014, a: 1}
+  descriptionColor: {r: 1, g: 0.83584905, b: 0.83584905, a: 1}
   physicalModel: {fileID: 4931965599760312160, guid: aec1c7cae44d3714da9a5b5ef1709a8e, type: 3}
   modelParentName: Hips
   physicalModelPos: {x: -0.001190402, y: 0.001450265, z: -0.006647717}
@@ -21,6 +24,6 @@ MonoBehaviour:
   sellPrice: 50
   luck: 0
   moveSpeed: 0
-  jumpForce: 0.5
+  jumpForce: 1
   lungeForce: 0
   regenSpeed: 0

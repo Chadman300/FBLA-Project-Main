@@ -2981,6 +2981,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 785840778854504354}
+  - component: {fileID: 1705958132087462992}
   - component: {fileID: 5493252267794943222}
   - component: {fileID: 8585335810302065327}
   - component: {fileID: 2398257435398425549}
@@ -3013,6 +3014,27 @@ Transform:
   - {fileID: 682653138790994883}
   m_Father: {fileID: 3172413691059402551}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1705958132087462992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5969779285766145056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 859d1c00c09107544a1d99fc7310cf7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items: []
+  playerController: {fileID: 8585335810302065327}
+  money: 0
+  score: 0
+  luck: 1
+  moveSpeed: 1
+  jumpForce: 1
+  lungeForce: 1
+  regenSpeed: 1
 --- !u!114 &5493252267794943222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3041,18 +3063,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 2398257435398425549}
+  ragdollValues: {fileID: 1705958132087462992}
+  uiManager: {fileID: 0}
   speed: 250
   rotateTourqe: 60
   mouseLook: 1
   jumpForce: 2000
   lungeForce: 3
   isGrounded: 0
-  lookTourqe: 200
-  playerCamera: {fileID: 0}
-  lookLayer:
+  whatIsGround:
     serializedVersion: 2
-    m_Bits: 512
-  lockYAxis: 1
+    m_Bits: 1
   limbCollisionLayer: 6
   rigidbodies:
   - {fileID: 3357673942069866004}
@@ -3121,21 +3142,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   rotationTorque: 300
-  anim: {fileID: 5183773284836243369}
-  animTransforms:
-  - {fileID: 7575789185724703520}
-  - {fileID: 398223039694725837}
-  - {fileID: 1874539409284128046}
-  - {fileID: 5499143321994299669}
-  - {fileID: 3937473633525610120}
-  - {fileID: 55425248959490206}
-  - {fileID: 8635239026576834482}
-  - {fileID: 5218230412285101028}
-  - {fileID: 7439236050288962853}
-  - {fileID: 4054209560686053383}
-  - {fileID: 3325016962714763070}
-  - {fileID: 2255204194262073244}
-  - {fileID: 8373521623891728540}
   legJoints:
   - {fileID: 1421931484572620789}
   - {fileID: 6906004021310089482}
@@ -3147,6 +3153,13 @@ MonoBehaviour:
   driveStiffnessLegs: 180
   stiffnessDividend: 4
   massDividend: 4
+  maxHealth: 100
+  timeBeforeRegenStarts: 3
+  healthValueIncrement: 0
+  healthTimeIncrement: 0
+  HealthSlider: {fileID: 0}
+  canGetStunned: 1
+  stunTimeMultiplyer: 0.1
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -3166,7 +3179,8 @@ MonoBehaviour:
   grabBreakForce: 1000
   rightHandUp: 0
   leftHandUp: 0
-  canPickUp: 1
+  canPickUpWeapons: 1
+  canPickUpItems: 1
   rightHandTransform: {fileID: 1024800268110105825}
   leftHandTransform: {fileID: 5612285222394982298}
   pickUpTag: pickItem
@@ -3174,6 +3188,27 @@ MonoBehaviour:
   pickRotOffset: {x: 0, y: 0, z: 0, w: 0}
   leftHandHasItem: 0
   rightHandHasItem: 0
+  lookTourqe: 200
+  playerCamera: {fileID: 0}
+  lookLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  lockYAxis: 1
+  anim: {fileID: 5183773284836243369}
+  animTransforms:
+  - {fileID: 7575789185724703520}
+  - {fileID: 398223039694725837}
+  - {fileID: 1874539409284128046}
+  - {fileID: 5499143321994299669}
+  - {fileID: 3937473633525610120}
+  - {fileID: 55425248959490206}
+  - {fileID: 8635239026576834482}
+  - {fileID: 5218230412285101028}
+  - {fileID: 7439236050288962853}
+  - {fileID: 4054209560686053383}
+  - {fileID: 3325016962714763070}
+  - {fileID: 2255204194262073244}
+  - {fileID: 8373521623891728540}
 --- !u!114 &2398257435398425549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3189,6 +3224,7 @@ MonoBehaviour:
   raiseRightHandKey: 324
   raiseLeftHandKey: 323
   pickUpKey: 107
+  pauseKey: 27
 --- !u!65 &778069909348301377
 BoxCollider:
   m_ObjectHideFlags: 0

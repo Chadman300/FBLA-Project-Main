@@ -5,7 +5,11 @@ using UnityEngine.UIElements;
 [CreateAssetMenu(fileName = "Item", menuName = "ItemManager/Item")]
 public class Item : ScriptableObject
 {
+    [Header("Text")]
     public string itemName;
+    public string itemDescription;
+    public Color nameColor;
+    public Color descriptionColor;
 
     [Header("Appearance")]
     public GameObject physicalModel;

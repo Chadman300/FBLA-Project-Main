@@ -10,9 +10,11 @@ using MoreMountains.Feedbacks;
 using DG.Tweening;
 
 public class AdvancedRagdollController : MonoBehaviour
-{    
+{
+    [Header("References")]
     public AdvancedRagdollSettings settings;
     public RagdollValuesController ragdollValues;
+    public UIManager uiManager;
 
     [Header("Movement")]
     public float speed = 250; //forward back speed
@@ -218,7 +220,7 @@ public class AdvancedRagdollController : MonoBehaviour
     {
         if(mouseLook && isGrounded)
             RayRotate();
-
+        
         Balance();
 
         ApplyFinalMovements();
@@ -425,6 +427,7 @@ public class AdvancedRagdollController : MonoBehaviour
             {
                 ragdollValues.AddItem(currentItemController);
                 currentItemController.grabFeedback?.PlayFeedbacks();
+                uiManager.AddToQueue(currentItemController.item.itemName, currentItemController.item.nameColor, currentItemController.item.itemDescription, currentItemController.item.descriptionColor);
             }
         }
     }
@@ -558,11 +561,6 @@ public class AdvancedRagdollController : MonoBehaviour
         currentObject.transform.parent = null;
 
         currentJoint.connectedBody = null;
-    }
-
-    private Quaternion AddQuaternions(Quaternion q1, Quaternion q2)
-    {
-        return new Quaternion(q1.x + q2.x, q1.y + q2.y, q1.z + q2.z, q1.w + q2.w);
     }
 
     private void TryGrab()
@@ -773,7 +771,7 @@ public class AdvancedRagdollController : MonoBehaviour
 
         yield return new WaitForSeconds(stunTime);
 
-        isStunned = true;
+        isStunned = false;
         RagDoll(false);
     }    
 
