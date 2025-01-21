@@ -59,14 +59,15 @@ public class AdvancedRagdollController : MonoBehaviour
     [Space(15)]
 
     [Header("Health Parameters")]
-    [SerializeField] private float maxHealth = 100f;
+    public float maxHealth = 100f;
     [SerializeField] private float timeBeforeRegenStarts = 3f;
     [SerializeField] private float healthValueIncrement = 3;
     [Tooltip("Increments currentHealth by healthValueIncrement every time of this value")]
     [SerializeField] private float healthTimeIncrement = 0.1f;
     [SerializeField] private Slider HealthSlider;
-    private float currentHealth;
+    public float currentHealth;
     private Coroutine regeneratingHealth;
+    public bool canRegenerate = false;
     public static Action<float> OnTakeDamage;
     public static Action<float> OnDamage;
     public static Action<float> OnHeal;
@@ -760,7 +761,8 @@ public class AdvancedRagdollController : MonoBehaviour
             StartCoroutine(RagdollStun(damage * stunTimeMultiplyer));
 
         //start Regen
-        regeneratingHealth = StartCoroutine(RegenerateHealth());
+        if (canRegenerate)
+            regeneratingHealth = StartCoroutine(RegenerateHealth());
     }
 
     private IEnumerator RagdollStun(float stunTime)
@@ -777,13 +779,17 @@ public class AdvancedRagdollController : MonoBehaviour
 
     public void ApplyHealth(float health)
     {
-        currentHealth += health;
+        if (currentHealth < maxHealth)
+        {
+            currentHealth += health; 
+        }
+
         OnHeal?.Invoke(currentHealth);
 
         //effects
         //healFeedBack?.PlayFeedbacks();
-
-        regeneratingHealth = StartCoroutine(RegenerateHealth());
+        if(canRegenerate)
+            regeneratingHealth = StartCoroutine(RegenerateHealth());
     }
 
     public void KillPlayer()

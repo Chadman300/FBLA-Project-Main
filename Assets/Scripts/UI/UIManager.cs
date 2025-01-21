@@ -1,3 +1,4 @@
+using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +29,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI ammoText;
 
     [Header("Health UI")]
-    [SerializeField] private TextMeshProUGUI healthText = default;
-    [SerializeField] private Slider healthSlider = default;
+    [SerializeField] private MMProgressBar healthBar;
 
     private void OnEnable()
     {
@@ -48,6 +48,7 @@ public class UIManager : MonoBehaviour
         window.SetActive(false);
         popupQueue = new Queue<(string, string)>();
         pauseMenu.SetActive(false);
+        healthBar.UpdateBar(playerController.maxHealth, 0f, playerController.maxHealth);
     }
 
     private void Update()
@@ -82,8 +83,7 @@ public class UIManager : MonoBehaviour
 
     private void UpdateHealth(float currentHealth)
     {
-        healthText.text = currentHealth.ToString("00");
-        healthSlider.value = currentHealth;
+        healthBar.UpdateBar(currentHealth, 0f, playerController.maxHealth);
     }
 
     public void AddToQueue(string text, Color textColor, string subText, Color subTextColor)

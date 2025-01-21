@@ -1,16 +1,48 @@
 using UnityEngine;
-
+using TMPro;
 public class WobblyText : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private TMP_Text textComponent;
 
-    // Update is called once per frame
-    void Update()
+    [Header("Wave Properties")]
+    [SerializeField] private float amplitude = 10f;
+    [SerializeField] private float waveLength = 0.01f;
+    [SerializeField] private float speed = 2f;
+
+
+    private void Update()
     {
-        
+        textComponent.ForceMeshUpdate();
+        var textInfo = textComponent.textInfo;
+
+        for(int i = 0; i < textInfo.characterCount; ++i)
+        {
+            var charInfo = textInfo.characterInfo[i];
+
+            if(!charInfo.isVisible){
+                continue;
+            }
+
+            var meshInfo = textInfo.meshInfo[charInfo.materialReferenceIndex];
+
+            for(int j = 0; j < 4; ++j)
+            {
+                var index = charInfo.vertexIndex + j;
+                var orig = meshInfo.vertices[index];
+
+                //edit text pos here
+                meshInfo.vertices[index] = orig + new Vector3(0, Mathf.Sin(Time.time * speed + orig.x * waveLength) * amplitude, 0f);
+
+                //meshInfo.colors32[index] = Color.red
+            }
+        }
+
+        for(int i = 0; i < textInfo.meshInfo.Length; ++i)
+        {
+            var meshInfo = textInfo.meshInfo[i];
+            meshInfo.mesh.vertices = meshInfo.vertices;
+            //meshInfo.mesh.colors32 = meshInfo.colors32;
+            textComponent.UpdateGeometry(meshInfo.mesh, i);
+        }
     }
 }
