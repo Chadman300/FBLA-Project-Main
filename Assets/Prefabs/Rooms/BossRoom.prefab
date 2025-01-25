@@ -2627,7 +2627,7 @@ GameObject:
   - component: {fileID: 2441335704978196360}
   - component: {fileID: 6226188797054169214}
   - component: {fileID: 813884644909097315}
-  - component: {fileID: 6021640017001942653}
+  - component: {fileID: 1036200092042454375}
   m_Layer: 8
   m_Name: BossRoom
   m_TagString: Untagged
@@ -2726,7 +2726,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 20, y: 20, z: 20}
   m_Center: {x: -0.069999695, y: 5, z: 21.82}
---- !u!114 &6021640017001942653
+--- !u!114 &1036200092042454375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2735,12 +2735,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3674529901827559555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e38054e9b61747c43ba1385fd3cb62f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 8945dad05174f104fa9934706b996c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomCollider: {fileID: 813884644909097315}
-  roomIdx: 0
-  isColliding: 0
+  doorPoints: []
+  doorPrefab: {fileID: 9130615328901476837, guid: d12948aa084b84c4ebe9b737375817af, type: 3}
+  wallPrefab: {fileID: 1001066466211679475, guid: a460e3d8a2932c545a53878c9967a6e9, type: 3}
+  roomIncrementSize: 30
 --- !u!1 &3785615452267099578
 GameObject:
   m_ObjectHideFlags: 0

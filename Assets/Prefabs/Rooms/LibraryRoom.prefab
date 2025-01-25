@@ -26751,7 +26751,7 @@ GameObject:
   - component: {fileID: 9073436788871854915}
   - component: {fileID: 1547899851728760882}
   - component: {fileID: 7887348800994866172}
-  - component: {fileID: 4766200494469347278}
+  - component: {fileID: 6659316837275363403}
   m_Layer: 8
   m_Name: LibraryRoom
   m_TagString: Untagged
@@ -26850,7 +26850,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 20, y: 20, z: 20}
   m_Center: {x: -0.069999695, y: 5, z: 21.82}
---- !u!114 &4766200494469347278
+--- !u!114 &6659316837275363403
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -26859,12 +26859,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8082337640494001215}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e38054e9b61747c43ba1385fd3cb62f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 8945dad05174f104fa9934706b996c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomCollider: {fileID: 7887348800994866172}
-  roomIdx: 0
-  isColliding: 0
+  doorPoints: []
+  doorPrefab: {fileID: 9130615328901476837, guid: d12948aa084b84c4ebe9b737375817af, type: 3}
+  wallPrefab: {fileID: 1001066466211679475, guid: a460e3d8a2932c545a53878c9967a6e9, type: 3}
+  roomIncrementSize: 30
 --- !u!1 &8102551089361798182
 GameObject:
   m_ObjectHideFlags: 0
