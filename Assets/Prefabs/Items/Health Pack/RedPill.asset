@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 193b448c5a0be1e438d1352e770b69e0, type: 3}
+  m_Name: RedPill
+  m_EditorClassIdentifier: 
+  itemName: Red Pill
+  itemDescription: +25% Max Health
+  nameColor: {r: 0.94716984, g: 0.24126014, b: 0.24126014, a: 1}
+  descriptionColor: {r: 1, g: 0.83584905, b: 0.83584905, a: 1}
+  waveTextAmplitude: 0
+  waveTextSpeed: 0
+  waveTextWaveLength: 0
+  physicalModel: {fileID: 0}
+  modelParentName: Hips
+  physicalModelPos: {x: 0, y: 0, z: 0}
+  physicalModelRot: {x: 0, y: 0, z: 0}
+  physicalModelScale: {x: 0, y: 0, z: 0}
+  sellPrice: 50
+  luck: 0
+  moveSpeed: 0
+  jumpForce: 1
+  lungeForce: 0
+  regenSpeed: 0
+  maxHealth: 0.25

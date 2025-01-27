@@ -10,6 +10,10 @@ public class Item : ScriptableObject
     public string itemDescription;
     public Color nameColor;
     public Color descriptionColor;
+    [Space]
+    public float waveTextAmplitude;
+    public float waveTextSpeed;
+    public float waveTextWaveLength;
 
     [Header("Appearance")]
     public GameObject physicalModel;
@@ -28,4 +32,5 @@ public class Item : ScriptableObject
     public float jumpForce = 0f;
     public float lungeForce = 0f;
     public float regenSpeed = 0f;
+    public float maxHealth = 0f;
 }

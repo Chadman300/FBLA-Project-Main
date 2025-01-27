@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8401120455981134510}
-  - component: {fileID: 2085632144577274445}
-  - component: {fileID: 7442773351079805992}
-  - component: {fileID: 8610993703626774993}
-  - component: {fileID: 3775975985139306183}
+  - component: {fileID: 1393430314722434204}
+  - component: {fileID: 6228000995181349774}
+  - component: {fileID: 4777517918473158037}
+  - component: {fileID: 2450786835030217297}
   - component: {fileID: 9115201948052271087}
   m_Layer: 0
   m_Name: Sword
@@ -30,21 +30,21 @@ Transform:
   m_GameObject: {fileID: 2374037583492861141}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.9226, y: 0.9602, z: 38.580666}
-  m_LocalScale: {x: 1.6, y: 1.4, z: 1.6}
+  m_LocalPosition: {x: 0, y: 0.619, z: 0}
+  m_LocalScale: {x: 2.8, y: 2.4, z: 2.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2085632144577274445
+--- !u!33 &1393430314722434204
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2374037583492861141}
-  m_Mesh: {fileID: 4300000, guid: 2c806ca7c76417d4d8926e0850628747, type: 3}
---- !u!23 &7442773351079805992
+  m_Mesh: {fileID: 9084402286935251835, guid: 5663dcd534e6f724db8c61c49d05a7a4, type: 3}
+--- !u!23 &6228000995181349774
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,7 +89,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8610993703626774993
+--- !u!64 &4777517918473158037
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,8 +110,8 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 2c806ca7c76417d4d8926e0850628747, type: 3}
---- !u!114 &3775975985139306183
+  m_Mesh: {fileID: 9084402286935251835, guid: 5663dcd534e6f724db8c61c49d05a7a4, type: 3}
+--- !u!114 &2450786835030217297
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,10 +123,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c6efb78e3a8d2741ac6dcf8a230cce7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 50
-  damageThreshold: {x: 15, y: 80}
-  velocityDividend: 10
-  attackDelay: 0.4
+  attackDamage: 35
+  damageThreshold: {x: 20, y: 60}
+  velocityDividend: 5
+  attackDelay: 0.2
   canAttack: 1
   isEquipt: 0
 --- !u!54 &9115201948052271087

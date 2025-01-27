@@ -21,7 +21,7 @@ public class ObjectAlpha : MonoBehaviour
 
     void Update()
     {
-        float distance = getDistance(objTrans, playerTransform);
+        float distance = float.MaxValue;
 
         for (int i = 0; i < objs.Length; i++)
         {
@@ -30,9 +30,9 @@ public class ObjectAlpha : MonoBehaviour
                 distance = curDis;
         }
 
-        var alphaPrecent = (distance / alphaDis) * 50;
-        alphaPrecent = alphaCurve.Evaluate((distance / alphaDis));
-
+        //var alphaPrecent = (distance / alphaDis) * 50;
+        var alphaPrecent = alphaCurve.Evaluate((distance / alphaDis));
+        
         if (distance < alphaDis)
         {
             setMaterials(alphaPrecent);
@@ -45,11 +45,7 @@ public class ObjectAlpha : MonoBehaviour
 
     private float getDistance(Transform t1, Transform t2)
     {
-        return Mathf.Sqrt(
-            ((t2.position.x - t1.position.x) * (t2.position.x - t1.position.x)) +
-            ((t2.position.y - t1.position.y) * (t2.position.y - t1.position.y)) +
-            ((t2.position.z - t1.position.z) * (t2.position.z - t1.position.z))
-            );
+        return Vector3.Distance(t1.position, t2.position);
     }
 
     private void setMaterials(float alpha)

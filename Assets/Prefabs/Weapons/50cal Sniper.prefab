@@ -67,11 +67,11 @@ MonoBehaviour:
   currentShootType: 1
   availableShootTypes: 01000000
   aimAssist: 1
-  aimForce: 30
-  aimRadius: 10
+  aimForce: 90
+  aimRadius: 15
   aimMaxSpeed: 20
-  aimAssistBoxSize: {x: 3, y: 4, z: 10}
-  aimBoxForwardOffset: 4
+  aimAssistBoxSize: {x: 3, y: 4, z: 15}
+  aimBoxForwardOffset: 5
   isHitScan: 1
   bulletSpawn: {fileID: 9145443132121868964}
   maxAmmo: 6

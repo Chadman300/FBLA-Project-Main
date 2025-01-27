@@ -258,10 +258,19 @@ public class GunController : MonoBehaviour
 
     private void BulletCollision(RaycastHit hit)
     {
+        //normal enemy
         if(hit.transform.gameObject.TryGetComponent<EnemyController>(out EnemyController enemyController))
         {
             enemyController.ApplyDamage(Random.Range(damage.x, damage.y));
             enemyController.rb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
+        }
+
+        //ragdoll enemy
+        if (hit.transform.gameObject.TryGetComponent<EnemyRagdollLimbCollision>(out EnemyRagdollLimbCollision enemyLimb))
+        {
+            enemyLimb.controller.ApplyDamage(Random.Range(damage.x, damage.y));
+            enemyLimb.GetComponent<Rigidbody>().AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
+            enemyLimb.controller.hipsRb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
         }
     }
 

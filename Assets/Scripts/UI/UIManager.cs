@@ -23,6 +23,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private int QueueMax = 4;
     private Queue<(string, string)> popupQueue; //make it different type for more detailed popups, you can add different types, titles, descriptions etc
     private Coroutine queueChecker;
+    private WobblyText wobblyPopupText;
 
     [Header("Ammo UI")]
     [SerializeField] private AdvancedRagdollController playerController;
@@ -30,6 +31,9 @@ public class UIManager : MonoBehaviour
 
     [Header("Health UI")]
     [SerializeField] private MMProgressBar healthBar;
+    [SerializeField] private Transform barTransform;
+    [SerializeField] private float barSizeMultiplyer = 0.5f;
+    private float defaultHealthBarSize;
 
     private void OnEnable()
     {
@@ -45,10 +49,13 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        defaultHealthBarSize = barTransform.localScale.x;
         window.SetActive(false);
         popupQueue = new Queue<(string, string)>();
         pauseMenu.SetActive(false);
         healthBar.UpdateBar(playerController.maxHealth, 0f, playerController.maxHealth);
+
+        wobblyPopupText = popupText.GetComponent<WobblyText>();
     }
 
     private void Update()
@@ -79,6 +86,11 @@ public class UIManager : MonoBehaviour
             ammoText.SetText($"");
         }
         */
+
+        //update bar size
+        Vector3 newScale = barTransform.localScale;
+        newScale.x = defaultHealthBarSize * (((playerController.ragdollValues.maxHealth - 1) * barSizeMultiplyer) + 1);
+        barTransform.localScale = newScale;
     }
 
     private void UpdateHealth(float currentHealth)
@@ -86,13 +98,17 @@ public class UIManager : MonoBehaviour
         healthBar.UpdateBar(currentHealth, 0f, playerController.maxHealth);
     }
 
-    public void AddToQueue(string text, Color textColor, string subText, Color subTextColor)
+    public void AddToQueue(Item item)
     {//parameter the same type as queue
-        if (popupQueue.Count > 0 ? text != popupQueue.Last().Item1 : true && popupQueue.Count < QueueMax - 1)
+        wobblyPopupText.amplitude = item.waveTextAmplitude;
+        wobblyPopupText.speed = item.waveTextSpeed;
+        wobblyPopupText.waveLength = item.waveTextWaveLength;
+
+        if (popupQueue.Count > 0 ? item.itemName != popupQueue.Last().Item1 : true && popupQueue.Count < QueueMax - 1)
         {
-            popupQueue.Enqueue((text, subText));
+            popupQueue.Enqueue((item.itemName, item.itemDescription));
             if (queueChecker == null)
-                queueChecker = StartCoroutine(CheckQueue(textColor, subTextColor));
+                queueChecker = StartCoroutine(CheckQueue(item.nameColor, item.descriptionColor));
         }
     }
 

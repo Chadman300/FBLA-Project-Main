@@ -12,6 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - COLOR_GRADING_ON
   - PROPIXELIZER_DITHERING_ON
   - RECEIVE_SHADOWS_ON
   - USE_OBJECT_POSITION_ON
@@ -72,7 +73,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PaletteLUT:
-        m_Texture: {fileID: 2800000, guid: f649cbc58189f5141ad422e49af19117, type: 3}
+        m_Texture: {fileID: 2800000, guid: 68baf8f66265bad43adb5e14584dba63, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_E9C4F4D0_Texture_1:
@@ -105,7 +106,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - COLOR_GRADING: 0
+    - COLOR_GRADING: 1
     - NORMAL_MAP: 0
     - PROPIXELIZER_DITHERING: 1
     - RECEIVE_SHADOWS: 1

@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyRagdollLimbCollision : MonoBehaviour
 {
     [Header("Utlility Parameters")]
-    [SerializeField] private EnemyRagdollController controller;
+    public EnemyRagdollController controller;
     [SerializeField] private bool canControllGrounded = false;
 
     [Header("Attack Parameters")]
@@ -17,22 +17,20 @@ public class EnemyRagdollLimbCollision : MonoBehaviour
             controller.isGrounded = true;
         }
 
-        /*
         //get dmg
         var damage = controller.limbAttackDamage * (controller.hipsRb.linearVelocity.magnitude / controller.limbVelocityDividend);
 
         //allow for punching
         if (canAttack && controller.canLimbAttack && damage >= controller.limbDamageThreshold)
         {
-            EnemyController enemyController;
-            if (collision.gameObject.TryGetComponent<EnemyController>(out enemyController))
+            AdvancedRagdollController playerController;
+            if (collision.gameObject.TryGetComponent<AdvancedRagdollController>(out playerController))
             {
                 StartCoroutine(controller.LimbDelay());
-                enemyController.ApplyDamage(damage);
+                playerController.ApplyDamage(damage);
                 Debug.Log(damage);
             }
         }
-        */
     }
 
     private bool CheckInLayerMask(GameObject obj, LayerMask layerMask)

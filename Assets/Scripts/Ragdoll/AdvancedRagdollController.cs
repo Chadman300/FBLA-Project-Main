@@ -64,7 +64,6 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private float healthValueIncrement = 3;
     [Tooltip("Increments currentHealth by healthValueIncrement every time of this value")]
     [SerializeField] private float healthTimeIncrement = 0.1f;
-    [SerializeField] private Slider HealthSlider;
     public float currentHealth;
     private Coroutine regeneratingHealth;
     public bool canRegenerate = false;
@@ -133,6 +132,10 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private Animator anim;
     [SerializeField] private Transform[] animTransforms;
 
+    [Header("Feedbakcs")]
+    [SerializeField] private MMF_Player damageFeedback;
+    [SerializeField] private MMF_Player healFeedback;
+
     [Space(15)]
 
     //input
@@ -150,8 +153,6 @@ public class AdvancedRagdollController : MonoBehaviour
     {
         OnTakeDamage += ApplyDamage;
         currentHealth = maxHealth;
-        HealthSlider.maxValue = maxHealth;
-        HealthSlider.value = currentHealth;
     }
 
     private void OnDisable()
@@ -393,7 +394,7 @@ public class AdvancedRagdollController : MonoBehaviour
     private void TryPickUp()
     {
         //items
-        if (canPickUpItems)
+        if (canPickUpItems && (rightHandUp || leftHandUp))
         {
             EquipItems();
         }
@@ -428,7 +429,7 @@ public class AdvancedRagdollController : MonoBehaviour
             {
                 ragdollValues.AddItem(currentItemController);
                 currentItemController.grabFeedback?.PlayFeedbacks();
-                uiManager.AddToQueue(currentItemController.item.itemName, currentItemController.item.nameColor, currentItemController.item.itemDescription, currentItemController.item.descriptionColor);
+                uiManager.AddToQueue(currentItemController.item);
             }
         }
     }
@@ -501,11 +502,20 @@ public class AdvancedRagdollController : MonoBehaviour
                         leftHandHasGun = false;
                 }
 
+                //set that the current hand has an item
                 if (isRightHand)
                     rightHandHasItem = true;
                 else
                     leftHandHasItem = true;
 
+                //enable rb if disabled
+                currentObject.GetComponent<Rigidbody>().isKinematic = false;
+
+                //if has bob script remove
+                if (currentObject.TryGetComponent<BobAndRotate>(out var currentBobRotate))
+                    currentBobRotate.enabled = false;
+
+                //setpos and rot
                 currentObject.transform.parent = rb.gameObject.transform;
                 currentObject.transform.localPosition = Vector3.zero;
                 currentObject.transform.localRotation = pickRotOffset;
@@ -749,7 +759,7 @@ public class AdvancedRagdollController : MonoBehaviour
         OnDamage?.Invoke(currentHealth);
 
         //effects
-        //damageFeedBack?.PlayFeedbacks();
+        damageFeedback?.PlayFeedbacks();
 
         if (currentHealth <= 0)
             KillPlayer();
@@ -787,7 +797,7 @@ public class AdvancedRagdollController : MonoBehaviour
         OnHeal?.Invoke(currentHealth);
 
         //effects
-        //healFeedBack?.PlayFeedbacks();
+        healFeedback?.PlayFeedbacks();
         if(canRegenerate)
             regeneratingHealth = StartCoroutine(RegenerateHealth());
     }

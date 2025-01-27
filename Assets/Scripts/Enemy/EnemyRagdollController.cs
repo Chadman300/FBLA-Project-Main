@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using MoreMountains.Feedbacks;
 using DG.Tweening;
 using UnityEngine.AI;
+using Unity.Cinemachine;
 
 public enum AIStates
 {
@@ -79,6 +80,15 @@ public class EnemyRagdollController : MonoBehaviour
 
     [Space(20)]
 
+    [Header("Attack Parameters")]
+    public bool canLimbAttack = true;
+    public float limbAttackDamage = 10f;
+    public float limbDamageThreshold = 5f;
+    [Tooltip("Minimum attack damage that will hurt enemy")]
+    public float limbDamageAttackDelay = 0.1f;
+    [Tooltip("Duration after limb attack were you cannot deal limb damage")]
+    [Range(0, 10)] public float limbVelocityDividend = 1f;
+
     [Header("Health Parameters")]
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private float timeBeforeRegenStarts = 3f;
@@ -100,6 +110,7 @@ public class EnemyRagdollController : MonoBehaviour
 
     [Header("Feedbacks Parameters")]
     public MMF_Player damageFeedbacks;
+    public MMF_Player deathFeedbacks;
 
     private bool isStunned = false;
 
@@ -125,6 +136,7 @@ public class EnemyRagdollController : MonoBehaviour
 
         playerController = GameObject.FindAnyObjectByType<AdvancedRagdollController>();
         agent = GetComponent<NavMeshAgent>();
+        agent.speed = moveSpeed;
     }
 
     private void Start()
@@ -148,6 +160,9 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void Update()
     {
+        if (isDead || PauseMenu.isPaused)
+            return;
+
         if(canAnimate)
             HandleAnimation();
 
@@ -166,7 +181,11 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Balance();
+        if (isDead || PauseMenu.isPaused)
+            return;
+
+        if (!isStunned)
+            Balance();
     }
 
     private void HandleAnimation()
@@ -223,13 +242,17 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void Lunge()
     {
+        //ragdoll and disable
+        agent.enabled = false;
+        StartCoroutine(RagdollStun(lungeStunTime));
+
         //Jumping
-        hipsRb.AddForce(hipsRb.transform.up * jumpForce * Time.deltaTime, ForceMode.Impulse);
+        hipsRb.linearVelocity += hipsRb.transform.up * jumpForce * Time.deltaTime;
+        //hipsRb.AddForce(hipsRb.transform.up * jumpForce * Time.deltaTime, ForceMode.Impulse);
 
         //Lunging
-        hipsRb.AddForce(hipsRb.transform.forward * lungeForce * Time.deltaTime, ForceMode.Impulse);
-
-        StartCoroutine(RagdollStun(lungeStunTime));
+        hipsRb.linearVelocity += hipsRb.transform.forward * lungeForce * Time.deltaTime;
+        //hipsRb.AddForce(hipsRb.transform.forward * lungeForce * Time.deltaTime, ForceMode.Impulse);
     }
 
     private void RagDoll(bool ragdoll)
@@ -319,11 +342,13 @@ public class EnemyRagdollController : MonoBehaviour
                 Lunge();
 
                 isGoingToLunge = false;
-                getNewLungeRandom = true;
             }
+
+            getNewLungeRandom = true;
         }
         else if(getNewLungeRandom)
         {
+            getNewLungeRandom = false;
             var rand = UnityEngine.Random.Range(0, lungeChance);
             if(rand == lungeChance - 1)
             {
@@ -334,15 +359,17 @@ public class EnemyRagdollController : MonoBehaviour
         //ragdoll while in air and dont let agent move it
         if(!isGrounded || isStunned)
         {
-            RagDoll(true);
-            agent.enabled = false;
+            //RagDoll(true);
             //agent.SetDestination(transform.position);
+            agent.enabled = false;
+            canAnimate = false;
             return;
         }
         else if (!isStunned)
         {
-            agent.enabled = true;
             RagDoll(false);
+            agent.enabled = true;
+            canAnimate = true;
         }
 
         //Patrolling
@@ -424,6 +451,13 @@ public class EnemyRagdollController : MonoBehaviour
         hipsRb.AddRelativeTorque(0, directionAnglePercent * rotationTorque, 0);
     }
 
+    public IEnumerator LimbDelay()
+    {
+        canLimbAttack = false;
+        yield return new WaitForSeconds(limbDamageAttackDelay);
+        canLimbAttack = true;
+    }
+
     public void ApplyDamage(float damage)
     {
         currentHealth -= damage;
@@ -470,13 +504,17 @@ public class EnemyRagdollController : MonoBehaviour
         if (regeneratingHealth != null)
             StopCoroutine(regeneratingHealth);
 
-        //unfreeze rb
-        Rigidbody rb;
-        if (TryGetComponent<Rigidbody>(out rb))
-            rb.constraints &= ~RigidbodyConstraints.FreezeRotation;
+        //Stun
+        isDead = true;
+        massDividend = 200;
+        stiffnessDividend = 200;
+        RagdollStun(1000);
+        agent.enabled = false;
+        anim.enabled = false;
+        canAnimate = false;
 
         //effects
-        //deathFeedBack?.PlayFeedbacks();
+        deathFeedbacks?.PlayFeedbacks();
         Debug.Log("dead", gameObject);
         isDead = true;
     }

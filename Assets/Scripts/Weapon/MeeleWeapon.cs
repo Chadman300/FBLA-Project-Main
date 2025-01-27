@@ -37,11 +37,19 @@ public class MeeleWeapon : MonoBehaviour
         //allow for punching
         if (canAttack && damage >= damageThreshold.x)
         {
-            EnemyController enemyController;
-            if (collision.gameObject.TryGetComponent<EnemyController>(out enemyController))
+            //enemy
+            if (collision.gameObject.TryGetComponent<EnemyController>(out EnemyController enemyController))
             {
                 StartCoroutine(AttackDelay());
                 enemyController.ApplyDamage(damage);
+                Debug.Log(damage);
+            }
+
+            //enemy ragdoll
+            if (collision.gameObject.TryGetComponent<EnemyRagdollController>(out EnemyRagdollController enemyRagdollController))
+            {
+                StartCoroutine(AttackDelay());
+                enemyRagdollController.ApplyDamage(damage);
                 Debug.Log(damage);
             }
         }

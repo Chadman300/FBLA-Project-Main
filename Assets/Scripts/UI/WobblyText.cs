@@ -5,9 +5,9 @@ public class WobblyText : MonoBehaviour
     [SerializeField] private TMP_Text textComponent;
 
     [Header("Wave Properties")]
-    [SerializeField] private float amplitude = 10f;
-    [SerializeField] private float waveLength = 0.01f;
-    [SerializeField] private float speed = 2f;
+    public float amplitude = 10f;
+    public float waveLength = 0.01f;
+    public float speed = 2f;
 
 
     private void Update()
