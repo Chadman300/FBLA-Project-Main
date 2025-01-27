@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Settings UI")]
+    [SerializeField] private SettingsManager settingsManager;
+
     [Header("PauseMenu UI")]
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private AdvancedRagdollSettings settings;
