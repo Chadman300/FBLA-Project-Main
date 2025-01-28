@@ -84,7 +84,7 @@ public class GunController : MonoBehaviour
 
     private void Update()
     {
-        if (PauseMenu.isPaused)
+        if (UIManager.isPaused)
             return;
 
         if (currentShootType == GunShootType.SemiAuto)

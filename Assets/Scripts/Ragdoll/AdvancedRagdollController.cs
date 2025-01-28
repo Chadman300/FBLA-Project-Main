@@ -190,7 +190,7 @@ public class AdvancedRagdollController : MonoBehaviour
     private void Update()
     {
         //dont update if paused
-        if (PauseMenu.isPaused)
+        if (UIManager.isPaused)
             return;
 
 

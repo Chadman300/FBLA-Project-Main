@@ -160,7 +160,7 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void Update()
     {
-        if (isDead || PauseMenu.isPaused)
+        if (isDead || UIManager.isPaused)
             return;
 
         if(canAnimate)
@@ -181,7 +181,7 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDead || PauseMenu.isPaused)
+        if (isDead || UIManager.isPaused)
             return;
 
         if (!isStunned)

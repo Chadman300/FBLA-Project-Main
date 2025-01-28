@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
 {
     [Header("Settings UI")]
     [SerializeField] private SettingsManager settingsManager;
+    [SerializeField] private GameObject settingsMenu;
 
     [Header("PauseMenu UI")]
     [SerializeField] private GameObject pauseMenu;
@@ -20,7 +21,7 @@ public class UIManager : MonoBehaviour
     [Header("AlertSystem UI")]
     [SerializeField] private TMP_Text popupText;
     [SerializeField] private TMP_Text popupSubText;
-    [SerializeField] private GameObject window;
+    [SerializeField] private GameObject popupWindow;
     [SerializeField] private Animator popupAnimator;
     [SerializeField] private string popupAnimationName = "AlertPopupAnim";
     [SerializeField] private int QueueMax = 4;
@@ -52,8 +53,10 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        pauseMenu.SetActive(false);
+
         defaultHealthBarSize = barTransform.localScale.x;
-        window.SetActive(false);
+        popupWindow.SetActive(false);
         popupQueue = new Queue<(string, string)>();
         pauseMenu.SetActive(false);
         healthBar.UpdateBar(playerController.maxHealth, 0f, playerController.maxHealth);
@@ -117,7 +120,7 @@ public class UIManager : MonoBehaviour
 
     private void ShowPopup(string text, Color textColor, string subText, Color subTextColor)
     { //parameter the same type as queue
-        window.SetActive(true);
+        popupWindow.SetActive(true);
         popupText.text = text;
         popupText.color = textColor;
         popupSubText.text = subText;
@@ -137,13 +140,22 @@ public class UIManager : MonoBehaviour
             } while (!popupAnimator.GetCurrentAnimatorStateInfo(0).IsTag("Idle"));
 
         } while (popupQueue.Count > 0);
-        window.SetActive(false);
+        popupWindow.SetActive(false);
         queueChecker = null;
     }
 
     public void PauseGame()
     {
         pauseMenu.SetActive(true);
+        settingsMenu.SetActive(false);
+        Time.timeScale = 0f;
+        isPaused = true;
+    }
+
+    public void OpenSettings()
+    {
+        pauseMenu.SetActive(false);
+        settingsMenu.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
     }
@@ -151,6 +163,7 @@ public class UIManager : MonoBehaviour
     public void ResumeGame()
     {
         pauseMenu.SetActive(false);
+        settingsMenu.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
     }
