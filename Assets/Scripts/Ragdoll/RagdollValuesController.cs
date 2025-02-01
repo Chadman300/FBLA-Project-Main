@@ -54,13 +54,17 @@ public class RagdollValuesController : MonoBehaviour
 
     public void AddItem(ItemController item)
     {
+        OnItemsChange();
+
         //make sure item isnt already there
         for (int i = 0;  i < items.Count; i++)
         {
             if (item.name == items[i].name)
+            {
                 //sell item
                 money += item.item.sellPrice;
                 return;
+            }
         }
 
         item.OnPickup();
@@ -86,6 +90,8 @@ public class RagdollValuesController : MonoBehaviour
 
     public void RemoveItem(ItemController item)
     {
+        OnItemsChange();
+
         for (int i = 0; i < items.Count; i++)
         {
             if (item.name == items[i].name)
@@ -97,6 +103,20 @@ public class RagdollValuesController : MonoBehaviour
 
                 return;
             }      
+        }
+    }
+
+    private void OnItemsChange()
+    {
+        //tell player gun to do OnItemsChange
+        if(playerController.leftHandHasGun && playerController.leftHandItemObj != null)
+        {
+            playerController.leftHandItemObj.GetComponent<GunController>().OnItemsChange(items);
+        }
+
+        if (playerController.rightHandHasGun && playerController.rightHandItemObj != null)
+        {
+            playerController.rightHandItemObj.GetComponent<GunController>().OnItemsChange(items);
         }
     }
 }

@@ -1,5 +1,6 @@
 using MoreMountains.Feedbacks;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.UIElements;
@@ -16,6 +17,9 @@ public class GunController : MonoBehaviour
     public AdvancedRagdollController playerController;
 
     [Header("Gun Parameters")]
+    public Vector3 pickRotOffset = Vector3.zero;
+    public Vector3 pickPosOffset = Vector3.zero;
+    [Space]
     [SerializeField] private Rigidbody gunRb;
     [SerializeField] private Vector2 damage;
     [SerializeField] private LayerMask hitMask;
@@ -52,6 +56,14 @@ public class GunController : MonoBehaviour
     [SerializeField] private float bulletVelocity = 250f;
     */
 
+    [Header("Laser Config")]
+    [SerializeField] private bool hasLaser = false;
+    [SerializeField] private Item laserItem;
+    [SerializeField] private LayerMask laserMask;
+    [SerializeField] private LineRenderer laserLineRenderer;
+    [SerializeField] private Transform laserOrigin;
+    [SerializeField] private float maxLaserRange = 250f;
+
     [Header("Trail Renderer Proppertys")]
     // Proppertys for trail renderer
     [SerializeField] private Material trailMaterial;
@@ -87,6 +99,10 @@ public class GunController : MonoBehaviour
         if (UIManager.isPaused)
             return;
 
+        //laser
+        if (hasLaser)
+            FireLaser();
+        //shooting
         if (currentShootType == GunShootType.SemiAuto)
         {
             if (Input.GetKeyDown(isRightHand ? KeyCode.Mouse1 : KeyCode.Mouse0))
@@ -125,6 +141,18 @@ public class GunController : MonoBehaviour
             AimAssist();
     }
 
+    private void FireLaser()
+    {
+        laserLineRenderer.SetPosition(0, laserOrigin.position);
+        if (Physics.Raycast(laserOrigin.position, laserOrigin.forward, out RaycastHit hit, maxLaserRange, laserMask))
+        {
+            laserLineRenderer.SetPosition(1, hit.point);
+        }
+        else
+        {
+            laserLineRenderer.SetPosition(1, laserOrigin.position + (laserOrigin.forward * maxLaserRange));
+        }
+    }
     private void AimAssist()
     {
         //get enemys
@@ -341,6 +369,21 @@ public class GunController : MonoBehaviour
         trail.shadowCastingMode = trailShadowCasting ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off;
 
         return trail;
+    }
+
+    public void OnItemsChange(List<ItemController> items)
+    {
+        hasLaser = false;
+        for(int i = 0; i < items.Count; i++)
+        {
+            //Laser
+            if (items[i].item.name == laserItem.name)
+            {
+                laserLineRenderer.SetPosition(0, Vector3.zero);
+                laserLineRenderer.SetPosition(1, Vector3.zero);
+                hasLaser = true;
+            }
+        }
     }
 
     private void OnDrawGizmos()

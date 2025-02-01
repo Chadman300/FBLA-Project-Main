@@ -4,6 +4,9 @@ using UnityEngine;
 public class MeeleWeapon : MonoBehaviour
 {
     [Header("Attack Parameters")]
+    public Vector3 pickRotOffset = Vector3.zero;
+    public Vector3 pickPosOffset = Vector3.zero;
+    [Space]
     public float attackDamage = 10f;
     public Vector2 damageThreshold = new Vector2(5f, 100f);
     [Tooltip("Minimum attack damage that will hurt enemy")]

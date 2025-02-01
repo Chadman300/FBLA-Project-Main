@@ -27,7 +27,7 @@ MonoBehaviour:
   sellPrice: 50
   luck: 0
   moveSpeed: 0
-  jumpForce: 1
+  jumpForce: 0
   lungeForce: 0
   regenSpeed: 0
   maxHealth: 0.25

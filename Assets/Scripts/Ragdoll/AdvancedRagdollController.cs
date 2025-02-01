@@ -111,14 +111,13 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private Transform leftHandTransform;
     [SerializeField] private string pickUpTag;
     [SerializeField] private float pickRadius = 3f;
-    [SerializeField] private Quaternion pickRotOffset;
 
     public bool leftHandHasItem = false;
     public bool rightHandHasItem = false;
-    private bool leftHandHasGun = false;
-    private bool rightHandHasGun = false;
-    private GameObject leftHandItemObj = null;
-    private GameObject rightHandItemObj = null;
+    public bool leftHandHasGun = false;
+    public bool rightHandHasGun = false;
+    public GameObject leftHandItemObj = null;
+    public GameObject rightHandItemObj = null;
 
     [Space(15)]
 
@@ -442,6 +441,9 @@ public class AdvancedRagdollController : MonoBehaviour
 
         colliders = Physics.OverlapSphere(handTransform.position, pickRadius);
 
+        Vector3 currentRot = Vector3.zero;
+        Vector3 currentPos = Vector3.zero;
+
         foreach (Collider collider in colliders)
         {
             if (isRightHand)
@@ -467,9 +469,13 @@ public class AdvancedRagdollController : MonoBehaviour
                     if (gunScript.isEquipt)
                         return;
 
+                    currentRot = gunScript.pickRotOffset;
+                    currentPos = gunScript.pickPosOffset;
+
                     gunScript.isEquipt = true;
                     gunScript.playerRb = hipsRb;
                     gunScript.playerController = this;
+                    gunScript.OnItemsChange(ragdollValues.items);
 
                     //set has gun in hand
                     if (isRightHand)
@@ -490,6 +496,9 @@ public class AdvancedRagdollController : MonoBehaviour
                     //make sure weapons not already equipt
                     if (meeleScript.isEquipt)
                         return;
+
+                    currentRot = meeleScript.pickRotOffset;
+                    currentPos = meeleScript.pickPosOffset;
 
                     meeleScript.enabled = true;
                     meeleScript.isEquipt = true;
@@ -517,8 +526,8 @@ public class AdvancedRagdollController : MonoBehaviour
 
                 //setpos and rot
                 currentObject.transform.parent = rb.gameObject.transform;
-                currentObject.transform.localPosition = Vector3.zero;
-                currentObject.transform.localRotation = pickRotOffset;
+                currentObject.transform.localPosition = currentPos;
+                currentObject.transform.localRotation = Quaternion.Euler(currentRot);
 
                 currentObject.layer = limbCollisionLayer;
 
@@ -557,21 +566,24 @@ public class AdvancedRagdollController : MonoBehaviour
             meeleScript.canAttack = false;
         }
 
+        currentObject.layer = 0;
+        currentObject.transform.parent = null;
+
+        currentJoint.connectedBody = null;
+        Destroy(currentJoint);
+
         if (isRightHand)
         {
             rightHandHasItem = false;
             rightHandHasGun = false;
+            rightHandItemObj = null;
         }
         else
         {
             leftHandHasGun = false;
             leftHandHasItem = false;
+            leftHandItemObj = null;
         }
-        
-        currentObject.layer = 0; 
-        currentObject.transform.parent = null;
-
-        currentJoint.connectedBody = null;
     }
 
     private void TryGrab()
