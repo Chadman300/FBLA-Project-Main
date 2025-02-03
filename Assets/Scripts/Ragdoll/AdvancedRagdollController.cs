@@ -15,6 +15,7 @@ public class AdvancedRagdollController : MonoBehaviour
     public AdvancedRagdollSettings settings;
     public RagdollValuesController ragdollValues;
     public UIManager uiManager;
+    public CameraFollow camFollow;
 
     [Header("Movement")]
     public float speed = 250; //forward back speed
@@ -134,6 +135,9 @@ public class AdvancedRagdollController : MonoBehaviour
     [Header("Feedbakcs")]
     [SerializeField] private MMF_Player damageFeedback;
     [SerializeField] private MMF_Player healFeedback;
+    [SerializeField] private MMF_Player jumpFeedback;
+    [SerializeField] private MMF_Player teleCommunicatorFeedback;
+    public MMF_Player teleportFeedback;
 
     [Space(15)]
 
@@ -272,8 +276,21 @@ public class AdvancedRagdollController : MonoBehaviour
             RagDoll(true);
         }
 
+        //set isgrounded to false when jumping
         if (jumpInputRaw > 0)
+        {
+            //when jumping and has telecommunicator play feedback and play jump feedback
+            if(isGrounded == true)
+            {
+                if(ragdollValues.hasTelecommunicator) teleCommunicatorFeedback?.PlayFeedbacks();
+                jumpFeedback?.PlayFeedbacks();
+            }
+                
+
+                
             isGrounded = false;
+        }
+            
     }
 
     private void HandleAnimation()
@@ -432,6 +449,7 @@ public class AdvancedRagdollController : MonoBehaviour
             }
         }
     }
+
     private void Equip(bool isRightHand, Transform handTransform, Rigidbody rb)
     {
         Collider[] colliders = null;
@@ -557,6 +575,7 @@ public class AdvancedRagdollController : MonoBehaviour
         if (gunScript != null)
         {
             gunScript.isEquipt = false;
+            gunScript.DisableLaser();
         }
         //meele weapon
         else if (meeleScript != null)
@@ -648,6 +667,30 @@ public class AdvancedRagdollController : MonoBehaviour
 
             grabbedObjLeft = null;
         }
+    }
+
+    public void HandleAds(bool isAds, float adsFov, float defaultFov)
+    {
+        //ToggleZoom
+    }
+
+    private IEnumerator ToggleZoom(bool isEnter, float _TargetOrthographicSize, float _defaultOrthographicSize, float _TimeToZoom, Coroutine routine)
+    {
+        float targetFov = isEnter ? _TargetOrthographicSize : _defaultOrthographicSize;
+        float startFov = camFollow.camera.Lens.OrthographicSize;
+        float timeElapsed = 0;
+
+        while (timeElapsed < _TimeToZoom)
+        {
+            camFollow.camera.Lens.OrthographicSize = Mathf.Lerp(startFov, targetFov, timeElapsed / _TimeToZoom);
+            timeElapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        camFollow.camera.Lens.OrthographicSize = targetFov;
+
+        routine = null;
     }
 
     private void Balance()

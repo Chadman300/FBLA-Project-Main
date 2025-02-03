@@ -1,8 +1,10 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
     [Header("Functional Parameters")]
+    public CinemachineCamera camera;
     [SerializeField] private Transform target;
     [Range(0, 1)] [SerializeField] private float smoothSpeed = 0.125f;
     [Range(0, 10)] [SerializeField] private float buffer = 1f;

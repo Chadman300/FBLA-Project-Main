@@ -60,10 +60,10 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.H))
+        if(player != null && Input.GetKeyDown(KeyCode.H))
             Debug.Log(currentHealth);
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (player != null && Input.GetKeyDown(KeyCode.R))
         {
             transform.rotation = new Quaternion(0, 0, 0,0); 
             Rigidbody rb;

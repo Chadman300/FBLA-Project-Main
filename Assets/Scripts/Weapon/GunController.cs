@@ -56,8 +56,11 @@ public class GunController : MonoBehaviour
     [SerializeField] private float bulletVelocity = 250f;
     */
 
+    [Header("ADS Config")]
+    public bool isAds = false;
+
     [Header("Laser Config")]
-    [SerializeField] private bool hasLaser = false;
+    public bool hasLaser = false;
     [SerializeField] private Item laserItem;
     [SerializeField] private LayerMask laserMask;
     [SerializeField] private LineRenderer laserLineRenderer;
@@ -99,9 +102,30 @@ public class GunController : MonoBehaviour
         if (UIManager.isPaused)
             return;
 
+        //Input
+        HandleInput();
+
         //laser
         if (hasLaser)
             FireLaser();
+
+        //Ads
+        //if (isAds)
+            //playerController.HandleAds();
+    }
+
+    private void HandleInput()
+    {
+        //ADS
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            isAds = true;
+        }
+        else
+        {
+            isAds = false;
+        }
+
         //shooting
         if (currentShootType == GunShootType.SemiAuto)
         {
@@ -114,7 +138,7 @@ public class GunController : MonoBehaviour
             {
                 isShooting = false;
             }
-                
+
         }
         else if (currentShootType == GunShootType.FullAuto)
         {
@@ -379,11 +403,17 @@ public class GunController : MonoBehaviour
             //Laser
             if (items[i].item.name == laserItem.name)
             {
-                laserLineRenderer.SetPosition(0, Vector3.zero);
-                laserLineRenderer.SetPosition(1, Vector3.zero);
+                DisableLaser();
                 hasLaser = true;
             }
         }
+    }
+
+    public void DisableLaser()
+    {
+        laserLineRenderer.SetPosition(0, Vector3.zero);
+        laserLineRenderer.SetPosition(1, Vector3.zero);
+        hasLaser = false;
     }
 
     private void OnDrawGizmos()

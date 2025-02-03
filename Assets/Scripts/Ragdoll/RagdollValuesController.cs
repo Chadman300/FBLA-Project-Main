@@ -1,11 +1,15 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RagdollValuesController : MonoBehaviour
 {
     [Header("items")]
     public List<ItemController> items = new List<ItemController>();
+    [Space]
+    [SerializeField] private Item teleCommunicatorItem;
+    public bool hasTelecommunicator;
 
     [Header("Refs")]
     [SerializeField] private AdvancedRagdollController playerController;
@@ -117,6 +121,17 @@ public class RagdollValuesController : MonoBehaviour
         if (playerController.rightHandHasGun && playerController.rightHandItemObj != null)
         {
             playerController.rightHandItemObj.GetComponent<GunController>().OnItemsChange(items);
+        }
+
+        //Find Items and Set bools
+        hasTelecommunicator = false;
+        for (int i = 0; i < items.Count; i++)
+        {
+            //telecommunicator
+            if (items[i].item.name == teleCommunicatorItem.name)
+            {
+                hasTelecommunicator = true;
+            }
         }
     }
 }
