@@ -5,12 +5,15 @@ public class CameraFollow : MonoBehaviour
 {
     [Header("Functional Parameters")]
     public CinemachineCamera camera;
-    [SerializeField] private Transform target;
+    public Transform target;
+    public Transform playerTransform;
     [Range(0, 1)] [SerializeField] private float smoothSpeed = 0.125f;
     [Range(0, 10)] [SerializeField] private float buffer = 1f;
     [SerializeField] private Vector3 offset;
     [SerializeField] private Quaternion rotOffset;
+    [SerializeField] private float maxWanderDistance = 20f;
     [SerializeField] private bool lookAt = false;
+    public bool lockY = false;
 
     private void FixedUpdate()
     {
@@ -18,9 +21,18 @@ public class CameraFollow : MonoBehaviour
         Vector3 desiredPos = target.position + offset;
 
         //only move if distance is greater than buffer
-        if(getDistance(desiredPos, transform.position) > buffer)
+        if (getDistance(desiredPos, transform.position) > buffer)
         {
             Vector3 smoothedPos = Vector3.Lerp(transform.position, desiredPos, smoothSpeed * Time.deltaTime * 10f);
+
+            //clamp smoothedPos pos
+
+            //lock Y
+            if (lockY)
+            {
+                smoothedPos.y = transform.position.y;
+            }
+
             transform.position = smoothedPos;
         }
 

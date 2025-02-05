@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb4b772797da9440885e8bd939e9560, type: 3}
   m_Name: ColorCurves
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   master:
     m_OverrideState: 0
     m_Value:
@@ -352,13 +352,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5485954d14dfb9a4c8ead8edb0ded5b1, type: 3}
   m_Name: LiftGammaGain
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   lift:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.98501784, z: 0.9843178, w: 0}
+    m_Value: {x: 1, y: 0.997546, z: 0.9883954, w: 0}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 0.9874067, y: 0.9850707, z: 1, w: 0}
+    m_Value: {x: 0.99189013, y: 0.99329525, z: 1, w: -0.0000000029401395}
   gain:
     m_OverrideState: 0
     m_Value: {x: 1, y: 1, z: 1, w: 0}
@@ -405,12 +405,12 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.49007213, y: 0.9151658, z: 1, w: 0.1878287}
+    m_Value: {x: 0.50542307, y: 0.9151382, z: 1, w: 0.1878287}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.9369679, z: 0.8683935, w: 0.100685924}
+    m_Value: {x: 1, y: 0.9369679, z: 0.8683935, w: 0.13656037}
   highlights:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1, w: 0}
   shadowsStart:
     m_OverrideState: 0

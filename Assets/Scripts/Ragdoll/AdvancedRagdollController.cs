@@ -8,6 +8,8 @@ using UnityEngine.UI;
 using UnityEditor.Build;
 using MoreMountains.Feedbacks;
 using DG.Tweening;
+using UnityEditor.ShaderGraph;
+using Unity.Cinemachine;
 
 public class AdvancedRagdollController : MonoBehaviour
 {
@@ -15,9 +17,9 @@ public class AdvancedRagdollController : MonoBehaviour
     public AdvancedRagdollSettings settings;
     public RagdollValuesController ragdollValues;
     public UIManager uiManager;
-    public CameraFollow camFollow;
 
     [Header("Movement")]
+    public bool canAirstrafe = true;
     public float speed = 250; //forward back speed
     [SerializeField] private float rotateTourqe = 15; //left right speed
     [SerializeField] private bool mouseLook = true;
@@ -128,6 +130,14 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private LayerMask lookLayer;
     [SerializeField] private bool lockYAxis = true;
 
+    [Header("Ads")]
+    [SerializeField] private CameraFollow camFollow;
+    [SerializeField] private Transform mouseFollow;
+    [SerializeField] private float zoomTime = 0.3f;
+    private float defaultOrthoSize;
+    private Coroutine zoomRoutine;
+    private Transform defaultCamFollowTarget;
+
     [Header("Animation")]
     [SerializeField] private Animator anim;
     [SerializeField] private Transform[] animTransforms;
@@ -136,6 +146,7 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private MMF_Player damageFeedback;
     [SerializeField] private MMF_Player healFeedback;
     [SerializeField] private MMF_Player jumpFeedback;
+    [SerializeField] private MMF_Player adsFeedback;
     [SerializeField] private MMF_Player teleCommunicatorFeedback;
     public MMF_Player teleportFeedback;
 
@@ -167,6 +178,8 @@ public class AdvancedRagdollController : MonoBehaviour
     {
         //camera
         //playerCamera = GetComponent<Camera>();
+        defaultOrthoSize = camFollow.camera.Lens.OrthographicSize;
+        defaultCamFollowTarget = camFollow.target;
 
         //settings
         if(!TryGetComponent<AdvancedRagdollSettings>(out settings))
@@ -213,12 +226,6 @@ public class AdvancedRagdollController : MonoBehaviour
         {
             ConfigurableJointExtensions.SetTargetRotationLocal(joints[i], animTransforms[i].localRotation, jointsInitialStartRot[i]);
         }
-
-        //debug
-        if(Input.GetKeyDown(KeyCode.J))
-        {
-            StartCoroutine(RagdollStun(1));
-        }
     }
 
     private void FixedUpdate()
@@ -239,7 +246,7 @@ public class AdvancedRagdollController : MonoBehaviour
 
     private void ApplyFinalMovements()
     {
-        if (isGrounded)
+        if (isGrounded || canAirstrafe)
         {
             //Strafe
             var moveVel = hipsRb.transform.forward * currentInput.x * Time.deltaTime;
@@ -251,7 +258,7 @@ public class AdvancedRagdollController : MonoBehaviour
             }
 
             //when add lunge force if jumping and moving forward
-            if (jumpInputRaw > 0 && currentInputRaw.x > 0)
+            if (jumpInputRaw > 0 && currentInputRaw.x > 0 && isGrounded)
                 moveVel *= lungeForce;
 
             hipsRb.linearVelocity = new Vector3(moveVel.x + sideMoveVel.x, hipsRb.linearVelocity.y, moveVel.z + sideMoveVel.z);
@@ -264,16 +271,18 @@ public class AdvancedRagdollController : MonoBehaviour
             }
 
             //Jumping
-            hipsRb.AddForce(hipsRb.transform.up * jumpInput * Time.deltaTime, ForceMode.Impulse);
+            if(isGrounded)
+                hipsRb.AddForce(hipsRb.transform.up * jumpInput * Time.deltaTime, ForceMode.Impulse);
 
             //When grounded stiffen ragdoll joins
-            if (!isStunned)
+            if (!isStunned && isGrounded)
                 RagDoll(false);
         }
-        else
+
+        if(!isGrounded)
         {
             //When not grounded ragdoll
-            RagDoll(true);
+            //RagDoll(true);
         }
 
         //set isgrounded to false when jumping
@@ -296,12 +305,12 @@ public class AdvancedRagdollController : MonoBehaviour
     private void HandleAnimation()
     {
         //run
-        if (currentInputRaw.x > 0) //forwards
+        if (currentInputRaw.x > 0 && isGrounded) //forwards
         {
             anim.SetBool("isRun", true);
             anim.SetBool("isRunBackwards", false);
         }
-        else if (currentInputRaw.x < 0) //backward
+        else if (currentInputRaw.x < 0 && isGrounded) //backward
         {
             anim.SetBool("isRunBackwards", true);
             anim.SetBool("isRun", false);
@@ -313,12 +322,12 @@ public class AdvancedRagdollController : MonoBehaviour
         }
 
         //strafe
-        if (currentInputRaw.y > 0) //right
+        if (currentInputRaw.y > 0 && isGrounded) //right
         {
             anim.SetBool("isRight", true);
             anim.SetBool("isLeft", false);
         }
-        else if (currentInputRaw.y < 0) //left
+        else if (currentInputRaw.y < 0 && isGrounded) //left
         {
             anim.SetBool("isLeft", true);
             anim.SetBool("isRight", false);
@@ -327,6 +336,16 @@ public class AdvancedRagdollController : MonoBehaviour
         {
             anim.SetBool("isLeft", false);
             anim.SetBool("isRight", false);
+        }
+
+        //jump
+        if(!isGrounded)
+        {
+            anim.SetBool("isJump", true);
+        }
+        else
+        {
+            anim.SetBool("isJump", false);
         }
 
         //right arm
@@ -374,6 +393,12 @@ public class AdvancedRagdollController : MonoBehaviour
                 Drop(true, rightHandTransform, rightHandRb);
             if(leftHandItemObj)
                 Drop(false, leftHandTransform, leftHandRb);
+        }
+
+        //debug
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            StartCoroutine(RagdollStun(1));
         }
 
         //grabbing
@@ -669,9 +694,43 @@ public class AdvancedRagdollController : MonoBehaviour
         }
     }
 
-    public void HandleAds(bool isAds, float adsFov, float defaultFov)
+    public void HandleAds(bool isAds, float adsFov)
     {
         //ToggleZoom
+        if (isAds)
+        {
+            //make camera follow mouse when adsed
+            camFollow.target = mouseFollow;
+
+            //lock camFollowY so it dosent infinatly go down whilst following
+            camFollow.lockY = true;
+
+            //play ads feedback
+            adsFeedback?.PlayFeedbacks();
+
+            if (zoomRoutine != null)
+            {
+                StopCoroutine(zoomRoutine);
+                zoomRoutine = null;
+            }
+
+            zoomRoutine = StartCoroutine(ToggleZoom(true, adsFov, defaultOrthoSize, zoomTime, zoomRoutine));
+        }
+        else
+        {
+            //make camera follow player again when not adsed
+            camFollow.target = defaultCamFollowTarget;
+            camFollow.lockY = false;
+            adsFeedback?.ResumeFeedbacks();
+
+            if (zoomRoutine != null)
+            {
+                StopCoroutine(zoomRoutine);
+                zoomRoutine = null;
+            }
+
+            zoomRoutine = StartCoroutine(ToggleZoom(false, adsFov, defaultOrthoSize, zoomTime, zoomRoutine));
+        }
     }
 
     private IEnumerator ToggleZoom(bool isEnter, float _TargetOrthographicSize, float _defaultOrthographicSize, float _TimeToZoom, Coroutine routine)
@@ -684,9 +743,13 @@ public class AdvancedRagdollController : MonoBehaviour
         {
             camFollow.camera.Lens.OrthographicSize = Mathf.Lerp(startFov, targetFov, timeElapsed / _TimeToZoom);
             timeElapsed += Time.deltaTime;
-
+            Debug.Log($"{camFollow.camera.Lens.OrthographicSize}, {targetFov}");
             yield return null;
         }
+
+        //pausefeedbacks
+        //if(isEnter)
+            //adsFeedback?.PauseFeedbacks();
 
         camFollow.camera.Lens.OrthographicSize = targetFov;
 
@@ -716,6 +779,8 @@ public class AdvancedRagdollController : MonoBehaviour
         {
             Vector3 targetPoint = hit.point;
             Vector3 direction = targetPoint - transform.position;
+
+            mouseFollow.position = targetPoint;
 
             if (lockYAxis)
             {

@@ -42,6 +42,9 @@ public class GunController : MonoBehaviour
     [SerializeField] private Vector3 aimAssistBoxSize = new Vector3(10, 4, 5); // L,W,H
     [SerializeField] private float aimBoxForwardOffset = 5f; // L,W,H
 
+    [Header("ADS Parameters")]
+    [SerializeField] private float adsFov = 6;
+
     [Header("Bullet Config")]
     [SerializeField] private bool isHitScan = true;
     [SerializeField] private Transform bulletSpawn;
@@ -97,21 +100,26 @@ public class GunController : MonoBehaviour
         //currentAmmo = maxAmmo;
     }
 
+    private void FixedUpdate()
+    {
+        if (!isShooting && aimAssist && playerController != null && playerController.isGrounded)
+            AimAssist();
+    }
+
     private void Update()
     {
         if (UIManager.isPaused)
             return;
 
-        //Input
-        HandleInput();
-
         //laser
         if (hasLaser)
             FireLaser();
 
-        //Ads
-        //if (isAds)
-            //playerController.HandleAds();
+        if (!isEquipt)
+            return;
+
+        //Input
+        HandleInput();
     }
 
     private void HandleInput()
@@ -119,10 +127,12 @@ public class GunController : MonoBehaviour
         //ADS
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
+            playerController.HandleAds(true, adsFov);
             isAds = true;
         }
-        else
+        else if (Input.GetKeyUp(KeyCode.Mouse1))
         {
+            playerController.HandleAds(false, adsFov);
             isAds = false;
         }
 
@@ -155,14 +165,13 @@ public class GunController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            currentAmmo = maxAmmo;
+            Reload();
         }
     }
 
-    private void FixedUpdate()
+    private void Reload()
     {
-        if (!isShooting && aimAssist && playerController != null && playerController.isGrounded)
-            AimAssist();
+        currentAmmo = maxAmmo;
     }
 
     private void FireLaser()
