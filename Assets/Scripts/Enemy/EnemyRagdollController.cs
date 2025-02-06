@@ -244,7 +244,7 @@ public class EnemyRagdollController : MonoBehaviour
     {
         //ragdoll and disable
         agent.enabled = false;
-        StartCoroutine(RagdollStun(lungeStunTime));
+        //StartCoroutine(RagdollStun(lungeStunTime));
 
         //Jumping
         hipsRb.linearVelocity += hipsRb.transform.up * jumpForce * Time.deltaTime;
@@ -506,9 +506,7 @@ public class EnemyRagdollController : MonoBehaviour
 
         //Stun
         isDead = true;
-        massDividend = 200;
-        stiffnessDividend = 200;
-        RagdollStun(1000);
+        RagDoll(true);
         agent.enabled = false;
         anim.enabled = false;
         canAnimate = false;

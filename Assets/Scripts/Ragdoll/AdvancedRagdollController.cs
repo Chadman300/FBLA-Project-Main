@@ -26,8 +26,14 @@ public class AdvancedRagdollController : MonoBehaviour
     public float jumpForce = 3000;
     [Range(1, 20)] public float lungeForce = 2;
     public bool isGrounded = false;
+    private float rotationY;
 
-    private float rotationY = 0;
+    [Header("Dash")]
+    public bool canDash = true;
+    [SerializeField] private float dashForce = 2000;
+    [SerializeField] private float doubleTapThreshold = 0.3f;
+    private float lastTapTime = 0f;
+    private float lastDirection = 0f;
 
     [Header("Physics Parameters")]
     public LayerMask whatIsGround;
@@ -76,6 +82,8 @@ public class AdvancedRagdollController : MonoBehaviour
 
     [Header("Stun Parameters")]
     [SerializeField] private bool canGetStunned = true;
+    [SerializeField] private float stunThreshold = 5f;
+    [Tooltip("Minimum damage that will stun ragdoll")]
     [Range(0, 2)][SerializeField] private float stunTimeMultiplyer;
     [Tooltip("Multiplies stun time when damaged (stunTimeMultiplyer * damage = stunTime)")]
 
@@ -83,6 +91,7 @@ public class AdvancedRagdollController : MonoBehaviour
     public LayerMask enemyLayer;
     public bool canLimbAttack = true;
     public float limbAttackDamage = 10f;
+    public float fistDamageMultiplyer = 4f;
     public float limbDamageThreshold = 5f;
     [Tooltip("Minimum attack damage that will hurt enemy")]
     public float limbDamageAttackDelay = 0.1f;
@@ -101,8 +110,8 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private Rigidbody leftHandRb;
     [SerializeField] private float grabBreakForce = 1000f;
     [Tooltip("How much force is required to break off connected body of joint")]
-    [SerializeField] private bool rightHandUp = false;
-    [SerializeField] private bool leftHandUp = false;
+    public bool rightHandUp = false;
+    public bool leftHandUp = false;
 
     private GameObject grabbedObjRight;
     private GameObject grabbedObjLeft;
@@ -146,6 +155,7 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private MMF_Player damageFeedback;
     [SerializeField] private MMF_Player healFeedback;
     [SerializeField] private MMF_Player jumpFeedback;
+    [SerializeField] private MMF_Player dashFeedback;
     [SerializeField] private MMF_Player adsFeedback;
     [SerializeField] private MMF_Player teleCommunicatorFeedback;
     public MMF_Player teleportFeedback;
@@ -430,6 +440,27 @@ public class AdvancedRagdollController : MonoBehaviour
             jumpInput = jumpForce * Input.GetAxis("Jump");
             jumpInputRaw = Input.GetAxis("Jump");
         }
+
+        //dashing
+        if (canDash && currentInputRaw.y != 0)
+        {
+            if (currentInputRaw.y == lastDirection)
+            {
+                if (Time.time - lastTapTime < doubleTapThreshold)
+                {
+                    Dash(transform.right * currentInputRaw.y);
+                }
+            }
+            lastTapTime = Time.time;
+            lastDirection = currentInputRaw.y;
+        }
+    }
+
+    private void Dash(Vector3 dashDirection)
+    {
+        Debug.Log("Dashed");
+        Debug.Log(dashDirection);
+        hipsRb.AddForce(dashDirection * dashForce * Time.deltaTime, ForceMode.Impulse);
     }
 
     private void TryPickUp()
@@ -480,7 +511,7 @@ public class AdvancedRagdollController : MonoBehaviour
         Collider[] colliders = null;
         MeeleWeapon meeleScript;
         GunController gunScript;
-        GameObject currentObject;
+        GameObject currentObject = null;
 
         colliders = Physics.OverlapSphere(handTransform.position, pickRadius);
 
@@ -489,18 +520,20 @@ public class AdvancedRagdollController : MonoBehaviour
 
         foreach (Collider collider in colliders)
         {
-            if (isRightHand)
+            var hasPickupTag = collider.CompareTag(pickUpTag);
+
+            if (isRightHand && hasPickupTag)
             {
                 rightHandItemObj = collider.gameObject;
                 currentObject = rightHandItemObj;
             }
-            else
+            else if (hasPickupTag)
             { 
                 leftHandItemObj = collider.gameObject;
                 currentObject = leftHandItemObj;
             }
 
-            if (currentObject.CompareTag(pickUpTag) && !collider.TryGetComponent<ItemController>(out var currentItemController))
+            if (hasPickupTag && !collider.TryGetComponent<ItemController>(out var currentItemController))
             {
                 meeleScript = currentObject.GetComponent<MeeleWeapon>();
                 gunScript = currentObject.GetComponent<GunController>();
@@ -887,7 +920,7 @@ public class AdvancedRagdollController : MonoBehaviour
             StopCoroutine(regeneratingHealth);
 
         //stunPlayer
-        if(canGetStunned)
+        if(canGetStunned && damage > stunThreshold)
             StartCoroutine(RagdollStun(damage * stunTimeMultiplyer));
 
         //start Regen
