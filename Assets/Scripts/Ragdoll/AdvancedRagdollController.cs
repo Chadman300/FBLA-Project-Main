@@ -35,6 +35,7 @@ public class AdvancedRagdollController : MonoBehaviour
     private float lastTapTime = 0f;
     private float lastDirection = 0f;
     private bool firstTapRegistered = false;
+    private bool resetRegisteredTapRegistered = false;
 
     [Header("Physics Parameters")]
     public LayerMask whatIsGround;
@@ -443,28 +444,9 @@ public class AdvancedRagdollController : MonoBehaviour
         }
 
         //dashing
-        if (canDash && currentInputRaw.y != 0) // Ensure input is active
+        if (canDash) // Ensure input is active
         {
-            if (currentInputRaw.y == lastDirection && firstTapRegistered) // Second tap check
-            {
-                if (Time.time - lastTapTime < doubleTapThreshold)
-                {
-                    Dash(transform.right * currentInputRaw.y);
-                    firstTapRegistered = false; // Reset tap registration
-                }
-            }
-            else // First tap detection
-            {
-                firstTapRegistered = true;
-                lastTapTime = Time.time;
-            }
 
-            lastDirection = currentInputRaw.y; // Store last direction
-        }
-        else if (Time.time - lastTapTime > doubleTapThreshold)
-        {
-            // Reset after threshold to avoid false positives
-            firstTapRegistered = false;
         }
     }
 
