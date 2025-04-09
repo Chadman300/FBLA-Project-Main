@@ -3,7 +3,7 @@ using UnityEngine;
 public class AdvancedLimbCollision : MonoBehaviour
 {
     [Header("Utlility Parameters")]
-    [SerializeField] private AdvancedRagdollController controller;
+    public AdvancedRagdollController controller;
     [SerializeField] private bool canControllGrounded = false;
 
     [Header("Attack Parameters")]

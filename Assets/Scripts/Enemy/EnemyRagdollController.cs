@@ -242,9 +242,12 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void Lunge()
     {
+        hipsRb.isKinematic = false;
+
         //ragdoll and disable
         agent.enabled = false;
         //StartCoroutine(RagdollStun(lungeStunTime));
+        StartCoroutine(KennematicStun(lungeStunTime));
 
         //Jumping
         hipsRb.linearVelocity += hipsRb.transform.up * jumpForce * Time.deltaTime;
@@ -328,6 +331,18 @@ public class EnemyRagdollController : MonoBehaviour
 
         isStunned = false;
         RagDoll(false);
+    }
+    
+    private IEnumerator KennematicStun(float stunTime)
+    {
+        //make player ragdoll untill stun times over
+        isStunned = true;
+        hipsRb.isKinematic = false;
+
+        yield return new WaitForSeconds(stunTime);
+
+        isStunned = false;
+        hipsRb.isKinematic = true;
     }
 
     private void HandleAIStates()
@@ -510,6 +525,7 @@ public class EnemyRagdollController : MonoBehaviour
         agent.enabled = false;
         anim.enabled = false;
         canAnimate = false;
+        hipsRb.isKinematic = false;
 
         //effects
         deathFeedbacks?.PlayFeedbacks();

@@ -23,7 +23,6 @@ public class FlyingEnemy : MonoBehaviour
     [SerializeField] private AdvancedRagdollController playerController;
     public AIStates currentState;
     [SerializeField] private float walkPointRange;
-    [SerializeField] private float attackCooldown;
     [SerializeField] private float chaseRange, lungeRange, attackRange;
     [SerializeField] private int lungeChance;
 
@@ -35,6 +34,8 @@ public class FlyingEnemy : MonoBehaviour
 
     [Header("Attack Parameters")]
     public bool canAttack = true;
+    [SerializeField] private float attackCooldown;
+    [SerializeField] private float attckSpinSpeed = 360;
     public float limbAttackDamage = 10f;
     public float limbDamageThreshold = 5f;
     [Tooltip("Minimum attack damage that will hurt enemy")]
@@ -73,6 +74,9 @@ public class FlyingEnemy : MonoBehaviour
 
     private void OnEnable()
     {
+        attackAvailable = true;
+        anim.applyRootMotion = false;
+
         OnTakeDamage += ApplyDamage;
         if (HealthSlider != null)
         {
@@ -102,8 +106,8 @@ public class FlyingEnemy : MonoBehaviour
             return;
 
 
-        //if(canAnimate)
-        //HandleAnimation();
+        if(canAnimate)
+          HandleAnimation();
 
         GetAIStates();
         HandleAIStates();
@@ -139,7 +143,7 @@ public class FlyingEnemy : MonoBehaviour
         }
 
         //Chasing
-        if (currentState == AIStates.Chasing)
+        if (currentState == AIStates.Chasing && !isStunned)
         {
             anim.SetBool("Chasing", true);
         }
@@ -162,15 +166,18 @@ public class FlyingEnemy : MonoBehaviour
     private void LookAtPoint(Transform point)
     {
         var oldRot = transform.rotation;
-        transform.LookAt(point);
+        //transform.LookAt(point);
+        rb.MoveRotation(Quaternion.LookRotation(point.position - transform.position));
         transform.rotation = new Quaternion(oldRot.x, transform.rotation.y, oldRot.z, transform.rotation.w);
     }
 
     private void Lunge()
     {
+        rb.isKinematic = false;
+
         //ragdoll and disable
         agent.enabled = false;
-        //StartCoroutine(RagdollStun(lungeStunTime));
+        StartCoroutine(Stun(lungeStunTime));
 
         //Lunging
         rb.linearVelocity += rb.transform.forward * lungeForce * Time.deltaTime;
@@ -208,6 +215,7 @@ public class FlyingEnemy : MonoBehaviour
         {
             //RagDoll(true);
             //agent.SetDestination(transform.position);
+            rb.isKinematic = false;
             agent.enabled = false;
             canAnimate = false;
             return;
@@ -221,6 +229,7 @@ public class FlyingEnemy : MonoBehaviour
         //Patrolling
         if (currentState == AIStates.Patrolling)
         {
+
             //get point
             if (!walkPointSet) SearchWalkPoint();
 
@@ -229,7 +238,7 @@ public class FlyingEnemy : MonoBehaviour
                 agent.SetDestination(walkPoint);
 
             //make agent look at point
-            //LookAtPoint(walkPoint);
+            transform.LookAt(walkPoint);
 
             //check if we have arrived
             Vector3 distanceToWalkPoint = transform.position - walkPoint;
@@ -241,6 +250,7 @@ public class FlyingEnemy : MonoBehaviour
         //Chasing
         else if (currentState == AIStates.Chasing)
         {
+
             //make agent go to player
             agent.SetDestination(playerController.transform.position);
             LookAtPoint(playerController.transform);
@@ -249,17 +259,35 @@ public class FlyingEnemy : MonoBehaviour
         //Attacking
         else if (currentState == AIStates.Attacking)
         {
+
             //make it stop moving
             //agent.SetDestination(transform.position);
 
-            LookAtPoint(playerController.transform);
+            //LookAtPoint(playerController.transform);
 
             //attack
             if (attackAvailable)
             {
+                Quaternion deltaRotation = Quaternion.Euler(0, attckSpinSpeed * Time.fixedDeltaTime, 0);
+                rb.MoveRotation(rb.rotation * deltaRotation);
+
                 StartCoroutine(ResetAttack(attackCooldown));
             }
         }
+    }
+
+    private IEnumerator Stun(float stunTime)
+    {
+        //make player ragdoll untill stun times over
+        isStunned = true;
+        rb.isKinematic = false;
+        rb.useGravity = true;
+
+        yield return new WaitForSeconds(stunTime);
+
+        isStunned = false;
+        rb.isKinematic = true;
+        rb.useGravity = false;
     }
 
     private IEnumerator ResetAttack(float resetTime)
@@ -333,6 +361,8 @@ public class FlyingEnemy : MonoBehaviour
         agent.enabled = false;
         anim.enabled = false;
         canAnimate = false;
+        rb.isKinematic = false;
+        rb.useGravity = true;
 
         //effects
         deathFeedbacks?.PlayFeedbacks();
@@ -345,14 +375,19 @@ public class FlyingEnemy : MonoBehaviour
         //get dmg
         var damage = limbAttackDamage * (rb.linearVelocity.magnitude / limbVelocityDividend);
 
+        if(attackAvailable && currentState == AIStates.Attacking)
+        {
+            damage += limbAttackDamage / 5;
+        }
+
         //allow for punching
         if (canAttack && damage >= limbDamageThreshold)
         {
-            AdvancedRagdollController playerController;
-            if (collision.gameObject.TryGetComponent<AdvancedRagdollController>(out playerController))
+            AdvancedLimbCollision playerLimb;
+            if (collision.gameObject.TryGetComponent<AdvancedLimbCollision>(out playerLimb))
             {
                 StartCoroutine(AttackDelay());
-                playerController.ApplyDamage(damage);
+                playerLimb.controller.ApplyDamage(damage);
                 Debug.Log(damage);
             }
         }
