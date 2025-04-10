@@ -6,6 +6,7 @@ using System.Collections;
 public class ConveyorBelt : MonoBehaviour
 {
     [SerializeField] private GameObject robotModel;
+    [SerializeField] private Vector3 robotScale = new Vector3(0,0,0);
     [SerializeField] private int numberOfRobotModels;
     [SerializeField] private float modelForwardOffset = 4.5f;
     [SerializeField] private float conveyorSpeed = 10f;
@@ -27,8 +28,9 @@ public class ConveyorBelt : MonoBehaviour
         {
             currentPos.z += modelForwardOffset;
             var curModel = Instantiate(robotModel);
-            curModel.transform.position = currentPos; 
-            curModel.transform.SetParent(transform); 
+            curModel.transform.position = currentPos;
+            curModel.transform.SetParent(transform);
+            curModel.transform.localScale = robotScale;
             robots.Add(curModel);
         }
     }
