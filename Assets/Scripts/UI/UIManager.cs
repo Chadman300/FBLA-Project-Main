@@ -18,6 +18,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private AdvancedRagdollSettings settings;
     public static bool isPaused = false;
 
+    [Header("DeadMenu UI")]
+    [SerializeField] private GameObject deadMenu;
+
+    [Header("DeadMenu UI")]
+    [SerializeField] private GameObject loadingMenu;
+    [SerializeField] private Slider loadingSlider;
+
     [Header("AlertSystem UI")]
     [SerializeField] private TMP_Text popupText;
     [SerializeField] private TMP_Text popupSubText;
@@ -167,6 +174,20 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1f;
         isPaused = false;
     }
+    
+    public void PlayerDied()
+    {
+        isPaused = true;
+        Time.timeScale = 0f;
+        deadMenu.SetActive(true);
+    }
+
+    public void PlayAgain()
+    {
+        deadMenu.SetActive(false);
+        ResumeGame();
+        StartCoroutine(LoadSceneASync(SceneManager.GetActiveScene().name));
+    }
 
     public void QuitGame()
     {
@@ -174,9 +195,30 @@ public class UIManager : MonoBehaviour
         ResumeGame();
     }
 
+    IEnumerator LoadSceneASync(string levelToLoad)
+    {
+        isPaused = true;
+        loadingMenu.SetActive(true);
+
+        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelToLoad);
+
+
+        while (!loadOperation.isDone)
+        {
+            float progressValue = Mathf.Clamp01(loadOperation.progress / 0.9f);
+            loadingSlider.value = progressValue;
+            yield return null;
+        }
+
+        isPaused = false;
+
+        SceneManager.LoadScene(levelToLoad);
+    }
+
     public void MainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        StartCoroutine(LoadSceneASync("Main Menu"));
+        deadMenu.SetActive(false);
         ResumeGame();
     }
 }

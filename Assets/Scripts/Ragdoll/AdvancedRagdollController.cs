@@ -931,6 +931,8 @@ public class AdvancedRagdollController : MonoBehaviour
 
         StartCoroutine(RagdollStun(100));
 
+        uiManager.PlayerDied();
+
         //effects
         //deathFeedBack?.PlayFeedbacks();
         Debug.Log("dead", gameObject);

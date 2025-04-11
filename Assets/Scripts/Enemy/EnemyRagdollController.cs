@@ -497,7 +497,7 @@ public class EnemyRagdollController : MonoBehaviour
 
         regeneratingHealth = null;
     }
-    private void KillEnemy()
+    public void KillEnemy()
     {
         currentHealth = 0;
 
