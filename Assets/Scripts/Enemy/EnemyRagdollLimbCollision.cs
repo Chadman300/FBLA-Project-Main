@@ -23,11 +23,11 @@ public class EnemyRagdollLimbCollision : MonoBehaviour
         //allow for punching
         if (canAttack && controller.canLimbAttack && damage >= controller.limbDamageThreshold)
         {
-            AdvancedLimbCollision playerLimb;
-            if (collision.gameObject.TryGetComponent<AdvancedLimbCollision>(out playerLimb))
+            AdvancedRagdollController playerController;
+            if (collision.gameObject.TryGetComponent<AdvancedRagdollController>(out playerController))
             {
                 StartCoroutine(controller.LimbDelay());
-                playerLimb.controller.ApplyDamage(damage);
+                playerController.ApplyDamage(damage);
                 Debug.Log(damage);
             }
         }

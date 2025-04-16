@@ -3,7 +3,7 @@ using UnityEngine;
 public class AdvancedLimbCollision : MonoBehaviour
 {
     [Header("Utlility Parameters")]
-    public AdvancedRagdollController controller;
+    [SerializeField] private AdvancedRagdollController controller;
     [SerializeField] private bool canControllGrounded = false;
 
     [Header("Attack Parameters")]
@@ -48,7 +48,6 @@ public class AdvancedLimbCollision : MonoBehaviour
         {
             EnemyController enemyController;
             EnemyRagdollController enemyRagdollController;
-            FlyingEnemy flyingController;
 
             //normal
             if (collision.gameObject.TryGetComponent<EnemyController>(out enemyController))
@@ -62,13 +61,6 @@ public class AdvancedLimbCollision : MonoBehaviour
             {
                 StartCoroutine(controller.LimbDelay());
                 enemyRagdollController.ApplyDamage(damage);
-                //Debug.Log(damage);
-            }
-            //flying enemy
-            else if (collision.gameObject.TryGetComponent<FlyingEnemy>(out flyingController))
-            {
-                StartCoroutine(controller.LimbDelay());
-                flyingController.ApplyDamage(damage);
                 //Debug.Log(damage);
             }
         }
