@@ -25,6 +25,7 @@ public class Item : ScriptableObject
     public Image spriteModel;
 
     [Header("Values")]
+    public int itemRarity = 1;
     public int sellPrice = 1;
 
     public float luck = 0f;

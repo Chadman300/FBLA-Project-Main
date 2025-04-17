@@ -370,7 +370,7 @@ MonoBehaviour:
         Active: 0
         UniqueID: -129877084
         Label: Scale
-        OriginalLabel: 
+        OriginalLabel: Scale
         ChannelMode: 0
         Channel: 0
         MMChannelDefinition: {fileID: 0}

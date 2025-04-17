@@ -16,7 +16,7 @@ public class FlyingEnemy : MonoBehaviour
     [Header("Physics Parameters")]
     public LayerMask whatIsGround;
     public LayerMask whatIsPlayer;
-    [SerializeField] private Rigidbody rb;
+    public Rigidbody rb;
 
     [Header("AI Parameters")]
     [SerializeField] private NavMeshAgent agent;
@@ -106,8 +106,8 @@ public class FlyingEnemy : MonoBehaviour
             return;
 
 
-        if(canAnimate)
-          HandleAnimation();
+        if (canAnimate)
+            HandleAnimation();
 
         GetAIStates();
         HandleAIStates();
@@ -349,7 +349,7 @@ public class FlyingEnemy : MonoBehaviour
 
         regeneratingHealth = null;
     }
-    private void KillEnemy()
+    public void KillEnemy()
     {
         currentHealth = 0;
 
@@ -375,7 +375,7 @@ public class FlyingEnemy : MonoBehaviour
         //get dmg
         var damage = limbAttackDamage * (rb.linearVelocity.magnitude / limbVelocityDividend);
 
-        if(attackAvailable && currentState == AIStates.Attacking)
+        if (attackAvailable && currentState == AIStates.Attacking)
         {
             damage += limbAttackDamage / 5;
         }

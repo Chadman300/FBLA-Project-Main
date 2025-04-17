@@ -163,14 +163,14 @@ public class EnemyRagdollController : MonoBehaviour
         if (isDead || UIManager.isPaused)
             return;
 
-        if(canAnimate)
+        if (canAnimate)
             HandleAnimation();
 
         GetAIStates();
         HandleAIStates();
 
         //set animimated rots to joints to animate
-        if(canAnimate)
+        if (canAnimate)
         {
             for (int i = 0; i < joints.Length; i++)
             {
@@ -191,7 +191,7 @@ public class EnemyRagdollController : MonoBehaviour
     private void HandleAnimation()
     {
         //Patrolling
-        if(currentState == AIStates.Patrolling)
+        if (currentState == AIStates.Patrolling)
         {
             anim.SetBool("Patrolling", true);
         }
@@ -237,17 +237,14 @@ public class EnemyRagdollController : MonoBehaviour
     {
         var oldRot = transform.rotation;
         transform.LookAt(point);
-        transform.rotation = new Quaternion (oldRot.x, transform.rotation.y, oldRot.z, transform.rotation.w);
+        transform.rotation = new Quaternion(oldRot.x, transform.rotation.y, oldRot.z, transform.rotation.w);
     }
 
     private void Lunge()
     {
-        hipsRb.isKinematic = false;
-
         //ragdoll and disable
         agent.enabled = false;
-        //StartCoroutine(RagdollStun(lungeStunTime));
-        StartCoroutine(KennematicStun(lungeStunTime));
+        StartCoroutine(RagdollStun(lungeStunTime));
 
         //Jumping
         hipsRb.linearVelocity += hipsRb.transform.up * jumpForce * Time.deltaTime;
@@ -332,25 +329,13 @@ public class EnemyRagdollController : MonoBehaviour
         isStunned = false;
         RagDoll(false);
     }
-    
-    private IEnumerator KennematicStun(float stunTime)
-    {
-        //make player ragdoll untill stun times over
-        isStunned = true;
-        hipsRb.isKinematic = false;
-
-        yield return new WaitForSeconds(stunTime);
-
-        isStunned = false;
-        hipsRb.isKinematic = true;
-    }
 
     private void HandleAIStates()
     {
         //Lunging
-        if(playerInLungeRange)
+        if (playerInLungeRange)
         {
-            if(isGoingToLunge && isGrounded)
+            if (isGoingToLunge && isGrounded)
             {
                 Debug.Log("Lunged!");
 
@@ -361,18 +346,18 @@ public class EnemyRagdollController : MonoBehaviour
 
             getNewLungeRandom = true;
         }
-        else if(getNewLungeRandom)
+        else if (getNewLungeRandom)
         {
             getNewLungeRandom = false;
             var rand = UnityEngine.Random.Range(0, lungeChance);
-            if(rand == lungeChance - 1)
+            if (rand == lungeChance - 1)
             {
                 isGoingToLunge = true;
             }
         }
 
         //ragdoll while in air and dont let agent move it
-        if(!isGrounded || isStunned)
+        if (!isGrounded || isStunned)
         {
             //RagDoll(true);
             //agent.SetDestination(transform.position);
@@ -388,7 +373,7 @@ public class EnemyRagdollController : MonoBehaviour
         }
 
         //Patrolling
-        if(currentState == AIStates.Patrolling)
+        if (currentState == AIStates.Patrolling)
         {
             //get point
             if (!walkPointSet) SearchWalkPoint();
@@ -406,9 +391,9 @@ public class EnemyRagdollController : MonoBehaviour
             if (distanceToWalkPoint.magnitude < 1f)
                 walkPointSet = false;
         }
-        
+
         //Chasing
-        else if(currentState == AIStates.Chasing)
+        else if (currentState == AIStates.Chasing)
         {
             //make agent go to player
             agent.SetDestination(playerController.transform.position);
@@ -416,7 +401,7 @@ public class EnemyRagdollController : MonoBehaviour
         }
 
         //Attacking
-        else if(currentState == AIStates.Attacking)
+        else if (currentState == AIStates.Attacking)
         {
             //make it stop moving
             //agent.SetDestination(transform.position);
@@ -424,7 +409,7 @@ public class EnemyRagdollController : MonoBehaviour
             LookAtPoint(playerController.transform);
 
             //attack
-            if(attackAvailable)
+            if (attackAvailable)
             {
                 StartCoroutine(ResetAttack(attackCooldown));
             }
@@ -512,7 +497,7 @@ public class EnemyRagdollController : MonoBehaviour
 
         regeneratingHealth = null;
     }
-    private void KillEnemy()
+    public void KillEnemy()
     {
         currentHealth = 0;
 
@@ -521,11 +506,12 @@ public class EnemyRagdollController : MonoBehaviour
 
         //Stun
         isDead = true;
-        RagDoll(true);
+        massDividend = 200;
+        stiffnessDividend = 200;
+        RagdollStun(1000);
         agent.enabled = false;
         anim.enabled = false;
         canAnimate = false;
-        hipsRb.isKinematic = false;
 
         //effects
         deathFeedbacks?.PlayFeedbacks();

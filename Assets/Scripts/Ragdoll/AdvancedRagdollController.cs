@@ -169,6 +169,7 @@ public class AdvancedRagdollController : MonoBehaviour
 
     private float jumpInput;
     private float jumpInputRaw;
+    public bool jumpAvailable = true;
 
     private Vector2 mouseP;
 
@@ -193,7 +194,7 @@ public class AdvancedRagdollController : MonoBehaviour
         defaultCamFollowTarget = camFollow.target;
 
         //settings
-        if(!TryGetComponent<AdvancedRagdollSettings>(out settings))
+        if (!TryGetComponent<AdvancedRagdollSettings>(out settings))
         {
             Debug.LogError($"{this} is missing AdvancedRagdollSettings reference");
         }
@@ -241,9 +242,9 @@ public class AdvancedRagdollController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(mouseLook && isGrounded)
+        if (mouseLook && isGrounded)
             RayRotate();
-        
+
         Balance();
 
         ApplyFinalMovements();
@@ -263,7 +264,7 @@ public class AdvancedRagdollController : MonoBehaviour
             var moveVel = hipsRb.transform.forward * currentInput.x * Time.deltaTime;
             var sideMoveVel = Vector3.zero;
 
-            if(mouseLook)
+            if (mouseLook)
             {
                 sideMoveVel = hipsRb.transform.right * currentInput.y * Time.deltaTime;
             }
@@ -275,14 +276,14 @@ public class AdvancedRagdollController : MonoBehaviour
             hipsRb.linearVelocity = new Vector3(moveVel.x + sideMoveVel.x, hipsRb.linearVelocity.y, moveVel.z + sideMoveVel.z);
 
             //rotation
-            if(!mouseLook)
+            if (!mouseLook)
             {
                 rotationY -= (currentInput.y * rotateTourqe) * Time.deltaTime;
                 //hipJoint.targetRotation = Quaternion.Euler(0, rotationY, 0); //keys
             }
 
             //Jumping
-            if(isGrounded)
+            if (isGrounded && jumpAvailable)
                 hipsRb.AddForce(hipsRb.transform.up * jumpInput * Time.deltaTime, ForceMode.Impulse);
 
             //When grounded stiffen ragdoll joins
@@ -290,7 +291,7 @@ public class AdvancedRagdollController : MonoBehaviour
                 RagDoll(false);
         }
 
-        if(!isGrounded)
+        if (!isGrounded)
         {
             //When not grounded ragdoll
             //RagDoll(true);
@@ -300,17 +301,19 @@ public class AdvancedRagdollController : MonoBehaviour
         if (jumpInputRaw > 0)
         {
             //when jumping and has telecommunicator play feedback and play jump feedback
-            if(isGrounded == true)
+            if (isGrounded && jumpAvailable)
             {
-                if(ragdollValues.hasTelecommunicator) teleCommunicatorFeedback?.PlayFeedbacks();
+                if (ragdollValues.hasTelecommunicator) teleCommunicatorFeedback?.PlayFeedbacks();
                 jumpFeedback?.PlayFeedbacks();
             }
-                
 
-                
             isGrounded = false;
+            jumpAvailable = false;
         }
-            
+        else
+        {
+            jumpAvailable = true;
+        }
     }
 
     private void HandleAnimation()
@@ -350,7 +353,7 @@ public class AdvancedRagdollController : MonoBehaviour
         }
 
         //jump
-        if(!isGrounded)
+        if (!isGrounded)
         {
             anim.SetBool("isJump", true);
         }
@@ -360,10 +363,10 @@ public class AdvancedRagdollController : MonoBehaviour
         }
 
         //right arm
-        if(rightHandUp)
+        if (rightHandUp)
         {
             //anim.SetTrigger("swing");
-            if(rightHandHasGun)
+            if (rightHandHasGun)
             {
                 anim.SetBool("isRightAim", true);
                 anim.SetBool("isRightHandUp", false);
@@ -372,13 +375,13 @@ public class AdvancedRagdollController : MonoBehaviour
                 anim.SetBool("isRightHandUp", true);
         }
         else
-        {      
+        {
             anim.SetBool("isRightHandUp", false);
             anim.SetBool("isRightAim", false);
         }
 
         //left arm
-        if (leftHandUp) 
+        if (leftHandUp)
         {
             if (leftHandHasGun)
             {
@@ -398,11 +401,11 @@ public class AdvancedRagdollController : MonoBehaviour
     private void HandleMovementInput()
     {
         //DEBUG : dellete latyer
-        if(Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            if(rightHandItemObj)
+            if (rightHandItemObj)
                 Drop(true, rightHandTransform, rightHandRb);
-            if(leftHandItemObj)
+            if (leftHandItemObj)
                 Drop(false, leftHandTransform, leftHandRb);
         }
 
@@ -436,11 +439,8 @@ public class AdvancedRagdollController : MonoBehaviour
         currentInput = new Vector2(speed * Input.GetAxis("Vertical"), horizonalMultiplyer * Input.GetAxis("Horizontal"));
         currentInputRaw = new Vector2(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal"));
 
-        if (isGrounded)
-        {
-            jumpInput = jumpForce * Input.GetAxis("Jump");
-            jumpInputRaw = Input.GetAxis("Jump");
-        }
+        jumpInput = jumpForce * Input.GetAxis("Jump");
+        jumpInputRaw = Input.GetAxis("Jump");
 
         //dashing
         if (canDash && currentInputRaw.y != 0) // Ensure input is active
@@ -540,7 +540,7 @@ public class AdvancedRagdollController : MonoBehaviour
                 currentObject = rightHandItemObj;
             }
             else if (hasPickupTag)
-            { 
+            {
                 leftHandItemObj = collider.gameObject;
                 currentObject = leftHandItemObj;
             }
@@ -576,7 +576,7 @@ public class AdvancedRagdollController : MonoBehaviour
                         leftHandHasGun = true;
                         gunScript.isRightHand = false;
                     }
-                        
+
                 }
                 //meele weapon
                 else if (meeleScript != null)
@@ -687,7 +687,7 @@ public class AdvancedRagdollController : MonoBehaviour
         {
             //get obj
             Physics.SphereCast(rightHandTransform.transform.position, sphereSize, rightHandRb.transform.forward, out hit, grabbableObjects);
-            if(hit.collider != null)
+            if (hit.collider != null)
                 grabbedObjRight = hit.collider.gameObject;
 
             //set joints and stuff
@@ -728,7 +728,7 @@ public class AdvancedRagdollController : MonoBehaviour
                     fixedJointL.connectedBody = leftHandRb;
                     fixedJointL.breakForce = grabBreakForce;
                 }
-            }     
+            }
         }
         else
         {
@@ -794,7 +794,7 @@ public class AdvancedRagdollController : MonoBehaviour
 
         //pausefeedbacks
         //if(isEnter)
-            //adsFeedback?.PauseFeedbacks();
+        //adsFeedback?.PauseFeedbacks();
 
         camFollow.camera.Lens.OrthographicSize = targetFov;
 
@@ -932,7 +932,7 @@ public class AdvancedRagdollController : MonoBehaviour
             StopCoroutine(regeneratingHealth);
 
         //stunPlayer
-        if(canGetStunned && damage > stunThreshold)
+        if (canGetStunned && damage > stunThreshold)
             StartCoroutine(RagdollStun(damage * stunTimeMultiplyer));
 
         //start Regen
@@ -950,20 +950,20 @@ public class AdvancedRagdollController : MonoBehaviour
 
         isStunned = false;
         RagDoll(false);
-    }    
+    }
 
     public void ApplyHealth(float health)
     {
         if (currentHealth < maxHealth)
         {
-            currentHealth += health; 
+            currentHealth += health;
         }
 
         OnHeal?.Invoke(currentHealth);
 
         //effects
         healFeedback?.PlayFeedbacks();
-        if(canRegenerate)
+        if (canRegenerate)
             regeneratingHealth = StartCoroutine(RegenerateHealth());
     }
 
@@ -975,6 +975,8 @@ public class AdvancedRagdollController : MonoBehaviour
             StopCoroutine(regeneratingHealth);
 
         StartCoroutine(RagdollStun(100));
+
+        uiManager.PlayerDied();
 
         //effects
         //deathFeedBack?.PlayFeedbacks();

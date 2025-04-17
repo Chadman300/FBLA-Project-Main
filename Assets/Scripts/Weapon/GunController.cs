@@ -333,6 +333,14 @@ public class GunController : MonoBehaviour
             enemyLimb.GetComponent<Rigidbody>().AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
             enemyLimb.controller.hipsRb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
         }
+
+        //enemy flying
+        if (hit.transform.gameObject.TryGetComponent<FlyingEnemy>(out FlyingEnemy enemyFlying))
+        {
+            enemyFlying.ApplyDamage(Random.Range(damage.x, damage.y));
+            enemyFlying.GetComponent<Rigidbody>().AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
+            enemyFlying.rb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
+        }
     }
 
     private IEnumerator DeleyedDisableTrail(TrailRenderer trail)

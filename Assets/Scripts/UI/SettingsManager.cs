@@ -27,6 +27,9 @@ public class SettingsManager : MonoBehaviour
 
     private void Start()
     {
+        //TryGetComponent<MMSoundManager>(out soundManger);
+        //soundManger = FindGa<MMSoundManager>();
+
         //Call to make sure everythings set
         ChangeGraphicsQuality();
         ChangeMasterVolume();

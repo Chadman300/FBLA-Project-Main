@@ -49,10 +49,18 @@ public class MeeleWeapon : MonoBehaviour
             }
 
             //enemy ragdoll
-            if (collision.gameObject.TryGetComponent<EnemyRagdollController>(out EnemyRagdollController enemyRagdollController))
+            if (collision.gameObject.TryGetComponent<EnemyRagdollLimbCollision>(out EnemyRagdollLimbCollision enemyRagdollController))
             {
                 StartCoroutine(AttackDelay());
-                enemyRagdollController.ApplyDamage(damage);
+                enemyRagdollController.controller.ApplyDamage(damage);
+                Debug.Log(damage);
+            }
+
+            //enemy flying
+            if (collision.gameObject.TryGetComponent<FlyingEnemy>(out FlyingEnemy flyingController))
+            {
+                StartCoroutine(AttackDelay());
+                flyingController.ApplyDamage(damage);
                 Debug.Log(damage);
             }
         }
