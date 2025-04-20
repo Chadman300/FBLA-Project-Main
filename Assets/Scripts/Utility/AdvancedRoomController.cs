@@ -4,6 +4,8 @@ using UnityEngine;
 public class AdvancedRoomController : MonoBehaviour
 {
     public bool hasRoomStarted = false;
+    public int completePrice = 100;
+    [Tooltip("money gained on complete")]
 
     public GameObject[] enimies;
     public GameObject[] items;
@@ -116,9 +118,12 @@ public class AdvancedRoomController : MonoBehaviour
             }
 
             roomComplete = allDead;
-            if(allDead == true)
+            if(allDead == true && enimies.Length > 0)
             {
                 roomCompleteFeedback?.PlayFeedbacks();
+
+                //addMoney
+                var playerValues = FindAnyObjectByType<RagdollValuesController>().money += completePrice; 
             }
         }
         else

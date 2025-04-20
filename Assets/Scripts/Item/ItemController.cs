@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ItemController : MonoBehaviour
 {
+    public bool canBePickedup = true;
     public Item item;
     public MMF_Player grabFeedback;
 

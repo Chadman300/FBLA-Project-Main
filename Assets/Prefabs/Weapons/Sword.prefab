@@ -124,6 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c6efb78e3a8d2741ac6dcf8a230cce7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canBePickedup: 1
+  itemRarity: 1
+  sellPrice: 1
   pickRotOffset: {x: 0, y: 0, z: 0}
   pickPosOffset: {x: 0, y: 0, z: 0}
   attackDamage: 35

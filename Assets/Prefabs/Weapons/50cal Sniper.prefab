@@ -28,9 +28,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 279208432314967213}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.20765088, z: -0, w: 0.978203}
+  m_LocalRotation: {x: 0, y: 0.20764709, z: 0, w: 0.9782039}
   m_LocalPosition: {x: -5, y: 1.9, z: 19.83}
-  m_LocalScale: {x: 2.5, y: 2.5, z: 3}
+  m_LocalScale: {x: 3, y: 2.5, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9025569457547063140}
@@ -49,10 +49,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b8b511db634d246a8000824b2257df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canBePickedup: 1
   isEquipt: 0
+  itemRarity: 1
+  sellPrice: 1
   shootFeedback: {fileID: 3123862104673128630}
   playerRb: {fileID: 0}
   playerController: {fileID: 0}
+  pickRotOffset: {x: 1.6142365, y: 2.4443607, z: 356.5812}
+  pickPosOffset: {x: 0.00101, y: 0.01411, z: 0.00015}
   gunRb: {fileID: 3487608699524259125}
   damage: {x: 100, y: 125}
   hitMask:
@@ -73,10 +78,12 @@ MonoBehaviour:
   aimMaxSpeed: 20
   aimAssistBoxSize: {x: 3, y: 4, z: 15}
   aimBoxForwardOffset: 5
+  adsFov: 6
   isHitScan: 1
   bulletSpawn: {fileID: 9145443132121868964}
   maxAmmo: 6
   currentAmmo: 6
+  isAds: 0
   hasLaser: 0
   laserItem: {fileID: 11400000, guid: 7dc0c72d9bcfdda44a162de5eca24b90, type: 2}
   laserMask:

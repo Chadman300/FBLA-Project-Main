@@ -6,6 +6,7 @@ public class AdvancedRagdollSettings : MonoBehaviour
     public KeyCode raiseRightHandKey;
     public KeyCode raiseLeftHandKey;
     public KeyCode pickUpKey;
+    public KeyCode dropKey;
 
     [Header("UI")]
     public KeyCode pauseKey;

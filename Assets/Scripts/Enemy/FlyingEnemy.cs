@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class FlyingEnemy : MonoBehaviour
 {
+    [Header("Values")]
+    public int scoreGiven = 100;
+
     [Header("Movement Parameters")]
     [SerializeField] private Transform player;
     [SerializeField] private float moveSpeed;
@@ -355,6 +358,9 @@ public class FlyingEnemy : MonoBehaviour
 
         if (regeneratingHealth != null)
             StopCoroutine(regeneratingHealth);
+
+        var playerValues = FindAnyObjectByType<RagdollValuesController>();
+        playerValues.score += scoreGiven;
 
         //Stun
         isDead = true;

@@ -13,6 +13,7 @@ public class RoomTeleporter : MonoBehaviour
         {
             //Change Position
             playerController.hipsRb.transform.position = teleportPoint.position;
+            playerController.curRoom = nextRoom;
 
             if (playerController.rightHandHasGun || playerController.rightHandHasItem)
             {

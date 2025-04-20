@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    [Header("Debug Menu UI")]
+    [SerializeField] private GameObject debugMenu;
+
     [Header("Settings UI")]
     [SerializeField] private SettingsManager settingsManager;
     [SerializeField] private GameObject settingsMenu;
@@ -20,8 +23,6 @@ public class UIManager : MonoBehaviour
 
     [Header("DeadMenu UI")]
     [SerializeField] private GameObject deadMenu;
-
-    [Header("DeadMenu UI")]
     [SerializeField] private GameObject loadingMenu;
     [SerializeField] private Slider loadingSlider;
 
@@ -48,9 +49,21 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject[] destroyOnLoads;
 
+    [Header("Player Info UI")]
+    [SerializeField] private RagdollValuesController ragdollValues;
+    [SerializeField] private TMP_Text maxHealthText;
+    [SerializeField] private TMP_Text luckText;
+    [SerializeField] private TMP_Text speedText;
+    [SerializeField] private TMP_Text dmgText;
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text currencyText;
+
+    private SaveValues saveValues;
 
     private void OnEnable()
     {
+        ragdollValues = FindAnyObjectByType<RagdollValuesController>();
+
         AdvancedRagdollController.OnDamage += UpdateHealth;
         AdvancedRagdollController.OnHeal += UpdateHealth;
     }
@@ -72,6 +85,19 @@ public class UIManager : MonoBehaviour
         healthBar.UpdateBar(playerController.maxHealth, 0f, playerController.maxHealth);
 
         wobblyPopupText = popupText.GetComponent<WobblyText>();
+
+        //saved vals
+        var newObj = Instantiate(new GameObject());
+        DontDestroyOnLoad(newObj);
+
+        var oldSaved = FindAnyObjectByType<SaveValues>();
+        if(oldSaved != null)
+        {
+            playerController.ragdollValues.money = oldSaved.savedMoney;
+            Destroy(oldSaved.gameObject);
+        }
+
+        saveValues = newObj.AddComponent<SaveValues>();
     }
 
     private void Update()
@@ -88,6 +114,8 @@ public class UIManager : MonoBehaviour
                 ResumeGame();
             }
         }
+
+        UpdatePlayerStats();
     }
 
     private void FixedUpdate()
@@ -154,6 +182,16 @@ public class UIManager : MonoBehaviour
         queueChecker = null;
     }
 
+    private void UpdatePlayerStats()
+    {
+        maxHealthText.text = $"{ragdollValues.maxHealth * 100} HP";
+        luckText.text = $"{ragdollValues.luck} X";
+        speedText.text = $"{ragdollValues.moveSpeed} X";
+        dmgText.text = $"{ragdollValues.damage} X";
+        scoreText.text = $"{ragdollValues.score} Pts";
+        currencyText.text = $"{ragdollValues.money} $";
+    }
+
     public void PauseGame()
     {
         pauseMenu.SetActive(true);
@@ -170,10 +208,20 @@ public class UIManager : MonoBehaviour
         isPaused = true;
     }
 
+    public void OpenDebug()
+    {
+        pauseMenu.SetActive(false);
+        settingsMenu.SetActive(false);
+        debugMenu.SetActive(true);
+        Time.timeScale = 0f;
+        isPaused = true;
+    }
+
     public void ResumeGame()
     {
         pauseMenu.SetActive(false);
         settingsMenu.SetActive(false);
+        debugMenu.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
     }
@@ -191,6 +239,7 @@ public class UIManager : MonoBehaviour
         deadMenu.SetActive(false);
         ResumeGame();
 
+        saveValues.savedMoney = playerController.ragdollValues.money;
         StartCoroutine(LoadSceneASync(SceneManager.GetActiveScene().name));
     }
 
@@ -209,8 +258,8 @@ public class UIManager : MonoBehaviour
             Destroy(item.gameObject);
         }
 
-        Destroy(gameObject);
         isPaused = false;
+        Destroy(gameObject);
 
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelToLoad);
 

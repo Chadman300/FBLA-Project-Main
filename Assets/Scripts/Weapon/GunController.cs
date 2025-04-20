@@ -7,7 +7,12 @@ using UnityEngine.UIElements;
 
 public class GunController : MonoBehaviour
 {
+    public bool canBePickedup = true;
     public bool isEquipt = false;
+
+    [Header("Values")]
+    public int itemRarity = 1;
+    public int sellPrice = 1;
 
     [Header("Feedbacks Parameters")]
     [SerializeField] private MMF_Player shootFeedback;
@@ -125,6 +130,7 @@ public class GunController : MonoBehaviour
     private void HandleInput()
     {
         //ADS
+        /*
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
             playerController.HandleAds(true, adsFov);
@@ -135,11 +141,12 @@ public class GunController : MonoBehaviour
             playerController.HandleAds(false, adsFov);
             isAds = false;
         }
+        */
 
         //shooting
         if (currentShootType == GunShootType.SemiAuto)
         {
-            if (Input.GetKeyDown(isRightHand ? KeyCode.Mouse1 : KeyCode.Mouse0))
+            if (Input.GetKeyDown(isRightHand ? playerController.settings.raiseRightHandKey : playerController.settings.raiseLeftHandKey) && !Input.GetKey(playerController.settings.dropKey))
             {
                 TryToShoot();
                 isShooting = currentAmmo > 0 ? true : false;
@@ -152,7 +159,7 @@ public class GunController : MonoBehaviour
         }
         else if (currentShootType == GunShootType.FullAuto)
         {
-            if (Input.GetKey(isRightHand ? KeyCode.Mouse1 : KeyCode.Mouse0))
+            if (Input.GetKey(isRightHand ? playerController.settings.raiseRightHandKey : playerController.settings.raiseLeftHandKey) && !Input.GetKey(playerController.settings.dropKey))
             {
                 TryToShoot();
                 isShooting = currentAmmo > 0 ? true : false;

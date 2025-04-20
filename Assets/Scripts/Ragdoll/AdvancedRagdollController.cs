@@ -13,6 +13,8 @@ using Unity.Cinemachine;
 
 public class AdvancedRagdollController : MonoBehaviour
 {
+    public AdvancedRoomController curRoom;
+
     [Header("References")]
     public AdvancedRagdollSettings settings;
     public RagdollValuesController ragdollValues;
@@ -99,6 +101,8 @@ public class AdvancedRagdollController : MonoBehaviour
     [Tooltip("Duration after limb attack were you cannot deal limb damage")]
     [Range(0, 10)] public float limbVelocityDividend = 1f;
     [Range(0, 10)] public float handControl = 1.5f;
+    [Range(0, 10)] public float damageMultiplier = 1f;
+    [Range(0, 10)] public float defenseMultiplier = 1f;
     [Tooltip("Hand Stiffness aka masss scale")]
 
     [Space(15)]
@@ -159,6 +163,8 @@ public class AdvancedRagdollController : MonoBehaviour
     [SerializeField] private MMF_Player dashFeedback;
     [SerializeField] private MMF_Player adsFeedback;
     [SerializeField] private MMF_Player teleCommunicatorFeedback;
+
+    public MMF_Player buyFeedback;
     public MMF_Player teleportFeedback;
 
     [Space(15)]
@@ -400,15 +406,22 @@ public class AdvancedRagdollController : MonoBehaviour
 
     private void HandleMovementInput()
     {
-        //DEBUG : dellete latyer
-        if (Input.GetKeyDown(KeyCode.F))
+        //dropping
+        if (Input.GetKey(settings.dropKey))
         {
-            if (rightHandItemObj)
+            Debug.Log("test");
+            if (rightHandItemObj && Input.GetKey(settings.raiseRightHandKey))
+            {
                 Drop(true, rightHandTransform, rightHandRb);
-            if (leftHandItemObj)
+            }
+                
+            if (leftHandItemObj && Input.GetKey(settings.raiseLeftHandKey))
+            {
                 Drop(false, leftHandTransform, leftHandRb);
+                Debug.Log("test2");
+            }
         }
-
+        
         //debug
         if (Input.GetKeyDown(KeyCode.J))
         {
@@ -478,13 +491,13 @@ public class AdvancedRagdollController : MonoBehaviour
     private void TryPickUp()
     {
         //items
-        if (canPickUpItems && (rightHandUp || leftHandUp))
+        if (canPickUpItems && (rightHandUp || leftHandUp) && Input.GetKeyDown(settings.pickUpKey))
         {
             EquipItems();
         }
 
         //weapons
-        if (canPickUpWeapons)
+        if (canPickUpWeapons && !Input.GetKey(settings.dropKey))
         {
             //right hand
             if (rightHandUp && !rightHandHasItem)
@@ -509,7 +522,7 @@ public class AdvancedRagdollController : MonoBehaviour
         foreach (Collider collider in colliders)
         {
             currentObject = collider.gameObject;
-            if (currentObject.CompareTag(pickUpTag) && currentObject.TryGetComponent<ItemController>(out currentItemController))
+            if (currentObject.CompareTag(pickUpTag) && currentObject.TryGetComponent<ItemController>(out currentItemController) && currentItemController.canBePickedup)
             {
                 ragdollValues.AddItem(currentItemController);
                 currentItemController.grabFeedback?.PlayFeedbacks();
@@ -523,6 +536,7 @@ public class AdvancedRagdollController : MonoBehaviour
         Collider[] colliders = null;
         MeeleWeapon meeleScript;
         GunController gunScript;
+        BuyableItem buyScript;
         GameObject currentObject = null;
 
         colliders = Physics.OverlapSphere(handTransform.position, pickRadius);
@@ -549,12 +563,19 @@ public class AdvancedRagdollController : MonoBehaviour
             {
                 meeleScript = currentObject.GetComponent<MeeleWeapon>();
                 gunScript = currentObject.GetComponent<GunController>();
+                buyScript = currentObject.GetComponent<BuyableItem>();
+
+                //buy
+                if (buyScript != null)
+                {
+                    buyScript.TryBuyItem();
+                }
 
                 //gun 
                 if (gunScript != null)
                 {
                     //make sure weapons not already equipt
-                    if (gunScript.isEquipt)
+                    if (gunScript.isEquipt || !gunScript.canBePickedup)
                         return;
 
                     currentRot = gunScript.pickRotOffset;
@@ -582,7 +603,7 @@ public class AdvancedRagdollController : MonoBehaviour
                 else if (meeleScript != null)
                 {
                     //make sure weapons not already equipt
-                    if (meeleScript.isEquipt)
+                    if (meeleScript.isEquipt && !meeleScript.canBePickedup)
                         return;
 
                     currentRot = meeleScript.pickRotOffset;
@@ -1004,5 +1025,26 @@ public class AdvancedRagdollController : MonoBehaviour
         }
 
         regeneratingHealth = null;
+    }
+
+    public void ClearCurrentRoom()
+    {
+        foreach (var enemy in curRoom.enimies)
+        {
+            if (enemy == null)
+                continue;
+
+            //ragdol
+            if (enemy.TryGetComponent<EnemyRagdollController>(out var enemyRagdollController))
+            {
+                enemyRagdollController.KillEnemy();
+            }
+
+            //flying
+            else if (enemy.TryGetComponent<FlyingEnemy>(out var enemyFlyingController))
+            {
+                enemyFlyingController.KillEnemy();
+            }
+        }
     }
 }

@@ -25,6 +25,8 @@ public class RagdollValuesController : MonoBehaviour
     public float lungeForce = 1f;
     public float regenSpeed = 1f;
     public float maxHealth = 1f;
+    public float damage = 1f;
+    public float defense = 1f;
 
     //start values
     private float pStartMoveSpeed;
@@ -32,6 +34,8 @@ public class RagdollValuesController : MonoBehaviour
     private float pStartLungeForce;
     private float pStartRegenSpeed;
     private float pStartMaxHealth;
+    private float pStartDamage;
+    private float pStartDefense;
 
     private void Start()
     {
@@ -40,6 +44,8 @@ public class RagdollValuesController : MonoBehaviour
         pStartJumpForce = playerController.jumpForce;
         pStartLungeForce = playerController.lungeForce;
         pStartMaxHealth = playerController.maxHealth;
+        pStartDamage = playerController.damageMultiplier;
+        pStartDefense = playerController.defenseMultiplier;
 
         //update current item values
         foreach (ItemController item in items)
@@ -50,10 +56,12 @@ public class RagdollValuesController : MonoBehaviour
 
     private void Update()
     {
-        playerController.speed      = pStartMoveSpeed  * moveSpeed;
-        playerController.jumpForce  = pStartJumpForce  * jumpForce;
-        playerController.lungeForce = pStartLungeForce * lungeForce;
-        playerController.maxHealth  = pStartMaxHealth  * maxHealth;
+        playerController.speed             = pStartMoveSpeed  * moveSpeed;
+        playerController.jumpForce         = pStartJumpForce  * jumpForce;
+        playerController.lungeForce        = pStartLungeForce * lungeForce;
+        playerController.maxHealth         = pStartMaxHealth  * maxHealth;
+        playerController.damageMultiplier  = pStartDamage * damage;
+        playerController.defenseMultiplier = pStartDefense * defense;
     }
 
     public void AddItem(ItemController item)
@@ -133,5 +141,10 @@ public class RagdollValuesController : MonoBehaviour
                 hasTelecommunicator = true;
             }
         }
+    }
+
+    public void GiveMoney(int value)
+    {
+        money += value;
     }
 }

@@ -25,11 +25,19 @@ public class ItemSpawner : MonoBehaviour
 
         foreach (var item in itemsPrefabPool)
         {
-            var curConroller = item.GetComponent<ItemController>();
-
-            float adjustedWeight = curConroller.item.itemRarity * (1f + playerValues.luck);
-            adjustedWeights.Add(adjustedWeight);
-            totalWeight += adjustedWeight;
+            if (item.TryGetComponent<MeeleWeapon>(out var meeleController))
+            {
+                totalWeight += CalcWeight(meeleController.itemRarity, adjustedWeights);
+            }
+            else if (item.TryGetComponent<GunController>(out var gunController))
+            {
+                totalWeight += CalcWeight(gunController.itemRarity, adjustedWeights);
+            }
+            else 
+            {
+                var itemController = item.GetComponent<ItemController>();
+                totalWeight += CalcWeight(itemController.item.itemRarity, adjustedWeights);
+            }
         }
 
         float randomValue = Random.Range(0f, totalWeight);
@@ -45,5 +53,12 @@ public class ItemSpawner : MonoBehaviour
         }
 
         return itemsPrefabPool[0]; // fallback
+    }
+
+    private float CalcWeight(float rarity, List<float> adjustedWeights)
+    {
+        float adjustedWeight = rarity * (1f + playerValues.luck);
+        adjustedWeights.Add(adjustedWeight);
+        return adjustedWeight;
     }
 }

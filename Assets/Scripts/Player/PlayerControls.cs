@@ -8,7 +8,8 @@ namespace Controls
     public class PlayerControls : MonoBehaviour
     {
         [Header("Controls")]
-        public KeyCode DropKey = KeyCode.X;
+        public KeyCode DropKey = KeyCode.F;
+        public KeyCode PickUpKey = KeyCode.E;
 
         public KeyCode SprintKey = KeyCode.LeftShift;
         public KeyCode JumpKey = KeyCode.Space;

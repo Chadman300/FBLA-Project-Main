@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class MeeleWeapon : MonoBehaviour
 {
+    public bool canBePickedup = true;
+
+    [Header("Values")]
+    public int itemRarity = 1;
+    public int sellPrice = 1;
+
     [Header("Attack Parameters")]
     public Vector3 pickRotOffset = Vector3.zero;
     public Vector3 pickPosOffset = Vector3.zero;

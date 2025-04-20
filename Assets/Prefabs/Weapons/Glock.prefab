@@ -6107,7 +6107,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b8b511db634d246a8000824b2257df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canBePickedup: 1
   isEquipt: 0
+  itemRarity: 1
+  sellPrice: 1
   shootFeedback: {fileID: 7001603085902868224}
   playerRb: {fileID: 0}
   playerController: {fileID: 0}

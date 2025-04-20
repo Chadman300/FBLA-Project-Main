@@ -12,6 +12,9 @@ using UnityEngine.InputSystem.Processors;
 
 public class EnemyController : MonoBehaviour
 {
+    [Header("Values")]
+    public int scoreGiven = 100;
+
     [Header("Movement Parameters")]
     [SerializeField] private Transform player;
     [SerializeField] private float moveSpeed;
@@ -131,6 +134,9 @@ public class EnemyController : MonoBehaviour
 
         if (regeneratingHealth != null)
             StopCoroutine(regeneratingHealth);
+
+        var playerValues = FindAnyObjectByType<RagdollValuesController>();
+        playerValues.score += scoreGiven;
 
         //unfreeze rb
         Rigidbody rb;

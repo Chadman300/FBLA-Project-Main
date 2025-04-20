@@ -18,6 +18,9 @@ public enum AIStates
 
 public class EnemyRagdollController : MonoBehaviour
 {
+    [Header("Values")]
+    public int scoreGiven = 100;
+
     [Header("Movement Parameters")]
     [SerializeField] private Transform player;
     [SerializeField] private float moveSpeed;
@@ -504,14 +507,18 @@ public class EnemyRagdollController : MonoBehaviour
         if (regeneratingHealth != null)
             StopCoroutine(regeneratingHealth);
 
+        var playerValues = FindAnyObjectByType<RagdollValuesController>();
+        playerValues.score += scoreGiven;
+
         //Stun
         isDead = true;
         massDividend = 200;
         stiffnessDividend = 200;
-        RagdollStun(1000);
         agent.enabled = false;
         anim.enabled = false;
         canAnimate = false;
+        hipsRb.isKinematic = false;
+        RagdollStun(1000);
 
         //effects
         deathFeedbacks?.PlayFeedbacks();
