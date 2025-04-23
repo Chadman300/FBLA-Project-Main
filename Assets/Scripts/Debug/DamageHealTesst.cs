@@ -18,8 +18,10 @@ public class DamageHealTesst : MonoBehaviour
         controller.ApplyHealth(healAmount);
     }
 }
-
+/*
 [CustomEditor(typeof(DamageHealTesst))]
+
+
 public class DamageHealTesstEditor : Editor
 {
     public override void OnInspectorGUI()
@@ -43,3 +45,4 @@ public class DamageHealTesstEditor : Editor
         }
     }
 }
+*/

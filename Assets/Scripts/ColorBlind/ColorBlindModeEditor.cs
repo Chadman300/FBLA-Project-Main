@@ -1,6 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-
+/*
 [CustomEditor(typeof(ColorBlindMode))]
 public class ColorBlindModeEditor : Editor
 {
@@ -22,3 +22,4 @@ public class ColorBlindModeEditor : Editor
         }
     }
 }
+*/

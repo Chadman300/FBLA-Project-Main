@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/*
 [CustomEditor(typeof(GenerateRooms))]
 public class GenerateRoomsEditor : Editor
 {
@@ -38,4 +39,4 @@ public class GenerateRoomsEditor : Editor
         } 
     }
 }
-
+*/
