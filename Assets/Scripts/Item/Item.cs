@@ -16,11 +16,12 @@ public class Item : ScriptableObject
     public float waveTextWaveLength;
 
     [Header("Appearance")]
-    public GameObject physicalModel;
-    public string modelParentName;
-    public Vector3 physicalModelPos;
-    public Vector3 physicalModelRot;
-    public Vector3 physicalModelScale;
+    public GameObject[] physicalModel;
+    public string[] modelParentName;
+    public Vector3[] physicalModelPos;
+    public Vector3[] physicalModelRot;
+    public Vector3[] physicalModelScale;
+
     [Space]
     public Image spriteModel;
 
@@ -34,4 +35,7 @@ public class Item : ScriptableObject
     public float lungeForce = 0f;
     public float regenSpeed = 0f;
     public float maxHealth = 0f;
+    public float damage = 0f;
+    public float defense = 0f;
+    public float healthRegenerated = 0f;
 }

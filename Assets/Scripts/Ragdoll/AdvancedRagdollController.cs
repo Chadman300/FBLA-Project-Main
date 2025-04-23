@@ -456,6 +456,7 @@ public class AdvancedRagdollController : MonoBehaviour
         jumpInputRaw = Input.GetAxis("Jump");
 
         //dashing
+        /*
         if (canDash && currentInputRaw.y != 0) // Ensure input is active
         {
             if (currentInputRaw.y == lastDirection && firstTapRegistered) // Second tap check
@@ -479,6 +480,7 @@ public class AdvancedRagdollController : MonoBehaviour
             // Reset after threshold to avoid false positives
             firstTapRegistered = false;
         }
+        */
     }
 
     private void Dash(Vector3 dashDirection)
@@ -491,22 +493,22 @@ public class AdvancedRagdollController : MonoBehaviour
     private void TryPickUp()
     {
         //items
-        if (canPickUpItems && (rightHandUp || leftHandUp) && Input.GetKeyDown(settings.pickUpKey))
+        if (canPickUpItems && Input.GetKeyDown(settings.pickUpKey))
         {
             EquipItems();
         }
 
         //weapons
-        if (canPickUpWeapons && !Input.GetKey(settings.dropKey))
+        if (canPickUpWeapons && !Input.GetKey(settings.dropKey) && Input.GetKey(settings.pickUpKey))
         {
             //right hand
-            if (rightHandUp && !rightHandHasItem)
+            if (rightHandUp)
             {
                 Equip(true, rightHandTransform, rightHandRb);
             }
 
             //left hand
-            if (leftHandUp && !leftHandHasItem)
+            if (leftHandUp)
             {
                 Equip(false, leftHandTransform, leftHandRb);
             }
@@ -548,35 +550,48 @@ public class AdvancedRagdollController : MonoBehaviour
         {
             var hasPickupTag = collider.CompareTag(pickUpTag);
 
-            if (isRightHand && hasPickupTag)
-            {
-                rightHandItemObj = collider.gameObject;
-                currentObject = rightHandItemObj;
-            }
-            else if (hasPickupTag)
-            {
-                leftHandItemObj = collider.gameObject;
-                currentObject = leftHandItemObj;
-            }
+            bool colIsItem = collider.TryGetComponent<ItemController>(out var currentItemController);
 
-            if (hasPickupTag && !collider.TryGetComponent<ItemController>(out var currentItemController))
+            if (hasPickupTag)
             {
+                currentObject = collider.gameObject;
+
                 meeleScript = currentObject.GetComponent<MeeleWeapon>();
                 gunScript = currentObject.GetComponent<GunController>();
                 buyScript = currentObject.GetComponent<BuyableItem>();
 
+                Debug.Log("Try BuyA@#!@");
                 //buy
                 if (buyScript != null)
                 {
+                    Debug.Log("Try Buy");
                     buyScript.TryBuyItem();
+                    if (buyScript.isItem)
+                    {
+                        EquipItems();
+
+                        if (isRightHand && hasPickupTag)
+                        {
+                            rightHandItemObj = null;
+                        }
+                        else if (hasPickupTag)
+                        {
+                            leftHandItemObj = null;
+                        }
+
+                        continue;
+                    }
                 }
+
+                if (colIsItem || (isRightHand && rightHandHasItem) || (!isRightHand && leftHandHasItem))
+                    continue;
 
                 //gun 
                 if (gunScript != null)
                 {
                     //make sure weapons not already equipt
                     if (gunScript.isEquipt || !gunScript.canBePickedup)
-                        return;
+                        continue;
 
                     currentRot = gunScript.pickRotOffset;
                     currentPos = gunScript.pickPosOffset;
@@ -603,8 +618,11 @@ public class AdvancedRagdollController : MonoBehaviour
                 else if (meeleScript != null)
                 {
                     //make sure weapons not already equipt
-                    if (meeleScript.isEquipt && !meeleScript.canBePickedup)
-                        return;
+                    if (meeleScript.isEquipt || !meeleScript.canBePickedup)
+                    {
+                        continue;
+                    }
+                        
 
                     currentRot = meeleScript.pickRotOffset;
                     currentPos = meeleScript.pickPosOffset;
@@ -618,6 +636,31 @@ public class AdvancedRagdollController : MonoBehaviour
                         rightHandHasGun = false;
                     else
                         leftHandHasGun = false;
+                }
+
+                if (isRightHand && hasPickupTag)
+                {
+                    if (!colIsItem)
+                    {
+                        rightHandItemObj = collider.gameObject;
+                        currentObject = rightHandItemObj;
+                    }
+                    else
+                    {
+                        currentObject = collider.gameObject;
+                    }
+                }
+                else if (hasPickupTag)
+                {
+                    if (!colIsItem)
+                    {
+                        leftHandItemObj = collider.gameObject;
+                        currentObject = leftHandItemObj;
+                    }
+                    else
+                    {
+                        currentObject = collider.gameObject;
+                    }
                 }
 
                 //set that the current hand has an item
@@ -649,7 +692,7 @@ public class AdvancedRagdollController : MonoBehaviour
                 joint.connectedMassScale = 0.5f;
                 joint.massScale = handControl;
 
-                return;
+                continue;
             }
         }
     }
@@ -941,6 +984,8 @@ public class AdvancedRagdollController : MonoBehaviour
 
     public void ApplyDamage(float damage)
     {
+        damage /= defenseMultiplier;
+
         currentHealth -= damage;
         OnDamage?.Invoke(currentHealth);
 

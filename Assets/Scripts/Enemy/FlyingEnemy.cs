@@ -7,8 +7,12 @@ using UnityEngine.UI;
 
 public class FlyingEnemy : MonoBehaviour
 {
+    [SerializeField] private bool isBoss = false;
+    [SerializeField] private Item bossKillItem;
+
     [Header("Values")]
     public int scoreGiven = 100;
+    public int moneyGiven = 10;
 
     [Header("Movement Parameters")]
     [SerializeField] private Transform player;
@@ -279,18 +283,23 @@ public class FlyingEnemy : MonoBehaviour
         }
     }
 
-    private IEnumerator Stun(float stunTime)
+    public IEnumerator Stun(float stunTime)
     {
         //make player ragdoll untill stun times over
         isStunned = true;
+        agent.enabled = false;
         rb.isKinematic = false;
         rb.useGravity = true;
 
         yield return new WaitForSeconds(stunTime);
 
         isStunned = false;
-        rb.isKinematic = true;
-        rb.useGravity = false;
+
+        if(rb != null)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
     }
 
     private IEnumerator ResetAttack(float resetTime)
@@ -361,6 +370,7 @@ public class FlyingEnemy : MonoBehaviour
 
         var playerValues = FindAnyObjectByType<RagdollValuesController>();
         playerValues.score += scoreGiven;
+        playerValues.money += moneyGiven;
 
         //Stun
         isDead = true;
@@ -369,6 +379,11 @@ public class FlyingEnemy : MonoBehaviour
         canAnimate = false;
         rb.isKinematic = false;
         rb.useGravity = true;
+
+        if(isBoss)
+        {
+            FindAnyObjectByType<UIManager>().GameComplete();
+        }
 
         //effects
         deathFeedbacks?.PlayFeedbacks();

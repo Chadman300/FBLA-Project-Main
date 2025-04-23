@@ -6109,7 +6109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canBePickedup: 1
   isEquipt: 0
-  itemRarity: 1
+  itemRarity: 2
   sellPrice: 1
   shootFeedback: {fileID: 7001603085902868224}
   playerRb: {fileID: 0}

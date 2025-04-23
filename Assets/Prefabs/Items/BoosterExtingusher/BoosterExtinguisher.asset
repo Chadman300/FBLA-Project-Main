@@ -16,14 +16,22 @@ MonoBehaviour:
   itemDescription: +Jump Force
   nameColor: {r: 0.94716984, g: 0.24126014, b: 0.24126014, a: 1}
   descriptionColor: {r: 1, g: 0.83584905, b: 0.83584905, a: 1}
+  waveTextAmplitude: 0
+  waveTextSpeed: 0
+  waveTextWaveLength: 0
   physicalModel: {fileID: 4931965599760312160, guid: aec1c7cae44d3714da9a5b5ef1709a8e, type: 3}
-  modelParentName: Hips
+  modelParentName: PlayerHips
   physicalModelPos: {x: -0.001190402, y: 0.001450265, z: -0.006647717}
   physicalModelRot: {x: 2.275303, y: 180, z: 179.60818}
   physicalModelScale: {x: 0.05, y: 0.05, z: 0.05}
+  physicalModelTwo: {fileID: 0}
+  modelParentNameTwo: 
+  itemRarity: 1
   sellPrice: 50
   luck: 0
   moveSpeed: 0
   jumpForce: 1
   lungeForce: 0
   regenSpeed: 0
+  maxHealth: 0
+  healthRegenerated: 0

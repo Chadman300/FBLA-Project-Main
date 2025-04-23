@@ -18,8 +18,13 @@ public enum AIStates
 
 public class EnemyRagdollController : MonoBehaviour
 {
+    public bool isShopKeeper = false;
+    private bool wasShopKeeper = false;
+    [SerializeField] private Item keeperKillItem;
+
     [Header("Values")]
     public int scoreGiven = 100;
+    public int moneyGiven = 50;
 
     [Header("Movement Parameters")]
     [SerializeField] private Transform player;
@@ -144,6 +149,8 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void Start()
     {
+        wasShopKeeper = isShopKeeper;
+
         //set physics params
         foreach (Rigidbody rb in rigidbodies)
         {
@@ -169,8 +176,11 @@ public class EnemyRagdollController : MonoBehaviour
         if (canAnimate)
             HandleAnimation();
 
-        GetAIStates();
-        HandleAIStates();
+        if(!isShopKeeper)
+        {
+            GetAIStates();
+            HandleAIStates();
+        }
 
         //set animimated rots to joints to animate
         if (canAnimate)
@@ -193,6 +203,17 @@ public class EnemyRagdollController : MonoBehaviour
 
     private void HandleAnimation()
     {
+        //shop keeper
+        if(isShopKeeper)
+        {
+            anim.SetBool("ShopKeeper", true);
+            return;
+        }
+        else
+        {
+            anim.SetBool("ShopKeeper", false);
+        }
+
         //Patrolling
         if (currentState == AIStates.Patrolling)
         {
@@ -247,6 +268,7 @@ public class EnemyRagdollController : MonoBehaviour
     {
         //ragdoll and disable
         agent.enabled = false;
+        hipsRb.isKinematic = false;
         StartCoroutine(RagdollStun(lungeStunTime));
 
         //Jumping
@@ -325,10 +347,12 @@ public class EnemyRagdollController : MonoBehaviour
     {
         //make player ragdoll untill stun times over
         isStunned = true;
+        hipsRb.isKinematic = false;
         RagDoll(true);
 
         yield return new WaitForSeconds(stunTime);
 
+        hipsRb.isKinematic = true;
         isStunned = false;
         RagDoll(false);
     }
@@ -509,6 +533,7 @@ public class EnemyRagdollController : MonoBehaviour
 
         var playerValues = FindAnyObjectByType<RagdollValuesController>();
         playerValues.score += scoreGiven;
+        playerValues.money += moneyGiven;
 
         //Stun
         isDead = true;
@@ -519,6 +544,12 @@ public class EnemyRagdollController : MonoBehaviour
         canAnimate = false;
         hipsRb.isKinematic = false;
         RagdollStun(1000);
+
+        if(wasShopKeeper)
+        {
+            FindAnyObjectByType<UIManager>().AddToQueue(keeperKillItem);
+            FindAnyObjectByType<RagdollValuesController>().luck -= 0.5f;
+        }
 
         //effects
         deathFeedbacks?.PlayFeedbacks();

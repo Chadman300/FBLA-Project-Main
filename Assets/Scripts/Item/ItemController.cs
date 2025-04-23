@@ -7,31 +7,39 @@ public class ItemController : MonoBehaviour
     public Item item;
     public MMF_Player grabFeedback;
 
-    public GameObject currentModel;
+    public GameObject[] currentModel;
+
+    private void Start()
+    {
+        currentModel = new GameObject[item.physicalModel.Length];
+    }
 
     public void OnPickup()
     {
-        if(item.physicalModel != null && currentModel == null)
+        for(int i = 0; i < currentModel.Length; i++)
         {
-            //instantiate & set parrent
-            currentModel = Instantiate(item.physicalModel);
-
-            var selectedParent = GameObject.Find(item.modelParentName);
-
-            //make sure parrents not null
-            if (selectedParent == null)
+            if (item.physicalModel[i] != null && currentModel[i] == null)
             {
-                Debug.LogError($"Could not find parent named: {item.modelParentName} !");
-                return;
+                //instantiate & set parrent
+                currentModel[i] = Instantiate(item.physicalModel[i]);
+
+                var selectedParent = GameObject.Find(item.modelParentName[i]);
+
+                //make sure parrents not null
+                if (selectedParent == null)
+                {
+                    Debug.LogError($"Could not find parent named: {item.modelParentName} !");
+                    return;
+                }
+
+                Debug.Log(selectedParent);
+                currentModel[i].transform.SetParent(selectedParent.transform);
+
+                //set transfrom
+                currentModel[i].transform.localPosition = item.physicalModelPos[i];
+                currentModel[i].transform.localRotation = Quaternion.Euler(item.physicalModelRot[i]);
+                currentModel[i].transform.localScale = item.physicalModelScale[i];
             }
-
-            Debug.Log(selectedParent);
-            currentModel.transform.SetParent(selectedParent.transform);
-
-            //set transfrom
-            currentModel.transform.localPosition = item.physicalModelPos;
-            currentModel.transform.localRotation = Quaternion.Euler(item.physicalModelRot);
-            currentModel.transform.localScale = item.physicalModelScale;
         }
     }
 }

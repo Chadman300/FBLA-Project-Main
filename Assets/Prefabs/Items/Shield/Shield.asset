@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 193b448c5a0be1e438d1352e770b69e0, type: 3}
+  m_Name: Shield
+  m_EditorClassIdentifier: 
+  itemName: Shield
+  itemDescription: +Defense, -Move Speed
+  nameColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
+  descriptionColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+  waveTextAmplitude: 0
+  waveTextSpeed: 0
+  waveTextWaveLength: 0
+  physicalModel:
+  - {fileID: 8783852107689873289, guid: e78c58bf145d8e44aa00bb36b5a9a8e3, type: 3}
+  modelParentName:
+  - Player Spine 2
+  physicalModelPos:
+  - {x: 0.0002, y: 0.00361, z: -0.00612}
+  physicalModelRot:
+  - {x: 270.20172, y: 174.54356, z: 185.33583}
+  physicalModelScale:
+  - {x: 0.8, y: 0.14950575, z: 0.8}
+  itemRarity: 2
+  sellPrice: 100
+  luck: 0
+  moveSpeed: -0.2
+  jumpForce: 0
+  lungeForce: 0
+  regenSpeed: 0
+  maxHealth: 0
+  damage: 0
+  defense: 0.5
+  healthRegenerated: 0

@@ -23,10 +23,12 @@ public class MeeleWeapon : MonoBehaviour
     public bool isEquipt = false;
 
     private Rigidbody rb;
+    private AdvancedRagdollController advancedRagdollController;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        advancedRagdollController = FindAnyObjectByType<AdvancedRagdollController>();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -43,6 +45,8 @@ public class MeeleWeapon : MonoBehaviour
             damage = damageThreshold.y;
         }
 
+        damage *= advancedRagdollController.damageMultiplier;
+
         //allow for punching
         if (canAttack && damage >= damageThreshold.x)
         {
@@ -58,6 +62,13 @@ public class MeeleWeapon : MonoBehaviour
             if (collision.gameObject.TryGetComponent<EnemyRagdollLimbCollision>(out EnemyRagdollLimbCollision enemyRagdollController))
             {
                 StartCoroutine(AttackDelay());
+
+                //enable shop keeper
+                if(enemyRagdollController.controller.isShopKeeper)
+                {
+                    enemyRagdollController.controller.isShopKeeper = false;
+                }
+
                 enemyRagdollController.controller.ApplyDamage(damage);
                 Debug.Log(damage);
             }
@@ -67,6 +78,7 @@ public class MeeleWeapon : MonoBehaviour
             {
                 StartCoroutine(AttackDelay());
                 flyingController.ApplyDamage(damage);
+                StartCoroutine(flyingController.Stun(damage / 10));
                 Debug.Log(damage);
             }
         }

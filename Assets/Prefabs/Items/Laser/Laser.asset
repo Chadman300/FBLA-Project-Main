@@ -19,11 +19,12 @@ MonoBehaviour:
   waveTextAmplitude: 0
   waveTextSpeed: 0
   waveTextWaveLength: 0
-  physicalModel: {fileID: 0}
-  modelParentName: Hips
-  physicalModelPos: {x: 0, y: 0, z: 0}
-  physicalModelRot: {x: 0, y: 0, z: 0}
-  physicalModelScale: {x: 0, y: 0, z: 0}
+  physicalModel: []
+  modelParentName: []
+  physicalModelPos: []
+  physicalModelRot: []
+  physicalModelScale: []
+  itemRarity: 1
   sellPrice: 100
   luck: 0
   moveSpeed: 0
@@ -31,3 +32,6 @@ MonoBehaviour:
   lungeForce: 0
   regenSpeed: 0
   maxHealth: 0
+  damage: 0
+  defense: 0
+  healthRegenerated: 0

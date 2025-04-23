@@ -25,6 +25,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject deadMenu;
     [SerializeField] private GameObject loadingMenu;
     [SerializeField] private Slider loadingSlider;
+    [SerializeField] private TMP_Text finialScoreText;
+
+    [Header("Game Complete UI")]
+    [SerializeField] private GameObject gameCompleteMenu;
+    [SerializeField] private TMP_Text finialScoreTextComplete;
 
     [Header("AlertSystem UI")]
     [SerializeField] private TMP_Text popupText;
@@ -55,6 +60,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text luckText;
     [SerializeField] private TMP_Text speedText;
     [SerializeField] private TMP_Text dmgText;
+    [SerializeField] private TMP_Text defenseTextText;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text currencyText;
 
@@ -94,6 +100,7 @@ public class UIManager : MonoBehaviour
         if(oldSaved != null)
         {
             playerController.ragdollValues.money = oldSaved.savedMoney;
+            playerController.ragdollValues.savedPrisoner = oldSaved.savedPrisonerStatus;
             Destroy(oldSaved.gameObject);
         }
 
@@ -143,7 +150,10 @@ public class UIManager : MonoBehaviour
     }
 
     public void AddToQueue(Item item)
-    {//parameter the same type as queue
+    {
+        Debug.Log("Added To Queue");
+
+        //parameter the same type as queue
         wobblyPopupText.amplitude = item.waveTextAmplitude;
         wobblyPopupText.speed = item.waveTextSpeed;
         wobblyPopupText.waveLength = item.waveTextWaveLength;
@@ -188,6 +198,7 @@ public class UIManager : MonoBehaviour
         luckText.text = $"{ragdollValues.luck} X";
         speedText.text = $"{ragdollValues.moveSpeed} X";
         dmgText.text = $"{ragdollValues.damage} X";
+        defenseTextText.text = $"{ragdollValues.defense} X";
         scoreText.text = $"{ragdollValues.score} Pts";
         currencyText.text = $"{ragdollValues.money} $";
     }
@@ -232,6 +243,7 @@ public class UIManager : MonoBehaviour
         isPaused = true;
         Time.timeScale = 0f;
         deadMenu.SetActive(true);
+        finialScoreText.text = ragdollValues.score.ToString();
     }
 
     public void PlayAgain()
@@ -240,7 +252,17 @@ public class UIManager : MonoBehaviour
         ResumeGame();
 
         saveValues.savedMoney = playerController.ragdollValues.money;
+        saveValues.savedPrisonerStatus = playerController.ragdollValues.savedPrisoner;
         StartCoroutine(LoadSceneASync(SceneManager.GetActiveScene().name));
+    }
+
+    public void GameComplete()
+    {
+        ResumeGame();
+        isPaused = true;
+        Time.timeScale = 0f;
+        gameCompleteMenu.SetActive(true);
+        finialScoreTextComplete.text = ragdollValues.score.ToString();
     }
 
     public void QuitGame()

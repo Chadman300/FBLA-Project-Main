@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.95551276, y: -0.000030185662, z: 0.2949498, w: -0.000008907596}
   m_LocalPosition: {x: -14.634972, y: 3.3849597, z: -4.999996}
-  m_LocalScale: {x: 2.6000004, y: 2.2, z: 2.6}
+  m_LocalScale: {x: 2.6000004, y: 2.1, z: 2.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -126,10 +126,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canBePickedup: 1
   itemRarity: 1
-  sellPrice: 1
+  sellPrice: 200
   pickRotOffset: {x: 0, y: 0, z: 0}
   pickPosOffset: {x: 0, y: 0, z: 0}
-  attackDamage: 35
+  attackDamage: 18
   damageThreshold: {x: 20, y: 60}
   velocityDividend: 5
   attackDelay: 0.2

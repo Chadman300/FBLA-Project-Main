@@ -4,6 +4,7 @@ public class BuyableItem : MonoBehaviour
 {
     [Header("Values")]
     public int price = 100;
+    public bool isItem = false;
 
     [Header("Refs")]
     [SerializeField] private GameObject container;

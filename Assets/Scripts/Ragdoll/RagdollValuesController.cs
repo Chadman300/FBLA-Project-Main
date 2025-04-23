@@ -37,6 +37,10 @@ public class RagdollValuesController : MonoBehaviour
     private float pStartDamage;
     private float pStartDefense;
 
+    [Header("Other Values")]
+    public bool savedPrisoner = false;
+    [SerializeField] private int moneyGainedFromPrisoner = 500;
+
     private void Start()
     {
         //set start player vals
@@ -51,6 +55,13 @@ public class RagdollValuesController : MonoBehaviour
         foreach (ItemController item in items)
         {
             AddOrRemoveValues(item);
+        }
+
+        //check if has saved Prisoner
+        if(savedPrisoner)
+        {
+            money += moneyGainedFromPrisoner;
+            savedPrisoner = false;
         }
     }
 
@@ -98,6 +109,11 @@ public class RagdollValuesController : MonoBehaviour
         lungeForce += item.item.lungeForce * addSubMul;
         regenSpeed += item.item.regenSpeed * addSubMul;
         maxHealth += item.item.maxHealth * addSubMul;
+        damage += item.item.damage * addSubMul;
+        defense += item.item.defense * addSubMul;
+
+
+        playerController.ApplyHealth(item.item.healthRegenerated);
     }
 
     public void RemoveItem(ItemController item)
@@ -111,7 +127,12 @@ public class RagdollValuesController : MonoBehaviour
                 items.Remove(items[i]);
 
                 AddOrRemoveValues(items[i], false);
-                Destroy(item.currentModel);
+
+                //destory obj
+                foreach(var model in item.currentModel)
+                {
+                    Destroy(model);
+                }
 
                 return;
             }      

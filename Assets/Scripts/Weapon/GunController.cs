@@ -329,14 +329,20 @@ public class GunController : MonoBehaviour
         //normal enemy
         if(hit.transform.gameObject.TryGetComponent<EnemyController>(out EnemyController enemyController))
         {
-            enemyController.ApplyDamage(Random.Range(damage.x, damage.y));
+            enemyController.ApplyDamage(Random.Range(damage.x, damage.y) * playerController.damageMultiplier);
             enemyController.rb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
         }
 
         //ragdoll enemy
         if (hit.transform.gameObject.TryGetComponent<EnemyRagdollLimbCollision>(out EnemyRagdollLimbCollision enemyLimb))
         {
-            enemyLimb.controller.ApplyDamage(Random.Range(damage.x, damage.y));
+            //enable shop keeper
+            if (enemyLimb.controller.isShopKeeper)
+            {
+                enemyLimb.controller.isShopKeeper = false;
+            }
+
+            enemyLimb.controller.ApplyDamage(Random.Range(damage.x, damage.y) * playerController.damageMultiplier);
             enemyLimb.GetComponent<Rigidbody>().AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
             enemyLimb.controller.hipsRb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
         }
@@ -344,7 +350,7 @@ public class GunController : MonoBehaviour
         //enemy flying
         if (hit.transform.gameObject.TryGetComponent<FlyingEnemy>(out FlyingEnemy enemyFlying))
         {
-            enemyFlying.ApplyDamage(Random.Range(damage.x, damage.y));
+            enemyFlying.ApplyDamage(Random.Range(damage.x, damage.y) * playerController.damageMultiplier);
             enemyFlying.GetComponent<Rigidbody>().AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
             enemyFlying.rb.AddForce(hitForce * bulletSpawn.transform.forward, ForceMode.Impulse);
         }

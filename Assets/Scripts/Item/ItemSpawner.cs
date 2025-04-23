@@ -33,6 +33,10 @@ public class ItemSpawner : MonoBehaviour
             {
                 totalWeight += CalcWeight(gunController.itemRarity, adjustedWeights);
             }
+            else if (item.TryGetComponent<GoldCoin>(out var goldCoin))
+            {
+                totalWeight += CalcWeight(goldCoin.rarity, adjustedWeights);
+            }
             else 
             {
                 var itemController = item.GetComponent<ItemController>();

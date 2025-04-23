@@ -15,12 +15,12 @@ public class RoomTeleporter : MonoBehaviour
             playerController.hipsRb.transform.position = teleportPoint.position;
             playerController.curRoom = nextRoom;
 
-            if (playerController.rightHandHasGun || playerController.rightHandHasItem)
+            if ((playerController.rightHandHasGun || playerController.rightHandHasItem) && playerController.rightHandItemObj != null)
             {
                 playerController.rightHandItemObj.transform.position = teleportPoint.position;
             }
 
-            if (playerController.leftHandHasGun || playerController.leftHandHasItem)
+            if ((playerController.leftHandHasGun || playerController.leftHandHasItem) && playerController.leftHandItemObj != null)
             {
                 playerController.leftHandItemObj.transform.position = teleportPoint.position;
             }

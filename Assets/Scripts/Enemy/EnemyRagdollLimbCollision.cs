@@ -17,6 +17,10 @@ public class EnemyRagdollLimbCollision : MonoBehaviour
             controller.isGrounded = true;
         }
 
+        //return bec that means that shop keeper is enabled
+        if (controller.enabled == false)
+            return;
+
         //get dmg
         var damage = controller.limbAttackDamage * (controller.hipsRb.linearVelocity.magnitude / controller.limbVelocityDividend);
 

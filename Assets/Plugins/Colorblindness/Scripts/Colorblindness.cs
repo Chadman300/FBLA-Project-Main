@@ -49,7 +49,7 @@ namespace SOHNE.Accessibility.Colorblindness
 
         public static Colorblindness Instance { get; private set; }
 
-        [UnityEditor.Callbacks.DidReloadScripts]
+        //[UnityEditor.Callbacks.DidReloadScripts]
         private static void OnScriptsReloaded()
         {
 #if !RENDERPIPELINE

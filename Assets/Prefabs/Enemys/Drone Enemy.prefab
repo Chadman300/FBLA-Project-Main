@@ -572,10 +572,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27525adb10e76844aa9a6c9d11fe8976, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreGiven: 100
   player: {fileID: 0}
   moveSpeed: 3
-  lungeForce: 3600
-  lungeStunTime: 1
+  lungeForce: 3000
+  lungeStunTime: 0.25
   whatIsGround:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -594,10 +595,10 @@ MonoBehaviour:
   canAttack: 1
   attackCooldown: 0
   attckSpinSpeed: 420
-  limbAttackDamage: 10
+  limbAttackDamage: 7
   limbDamageThreshold: 5
   damageAttackDelay: 0.5
-  limbVelocityDividend: 8
+  limbVelocityDividend: 0
   maxHealth: 20
   timeBeforeRegenStarts: 3
   healthValueIncrement: 3
@@ -656,8 +657,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 3.5
-  m_BaseOffset: 3
+  m_Height: 3
+  m_BaseOffset: 2.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!95 &215771131286251421

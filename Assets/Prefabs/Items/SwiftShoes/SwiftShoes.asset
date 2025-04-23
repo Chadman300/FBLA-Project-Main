@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 193b448c5a0be1e438d1352e770b69e0, type: 3}
+  m_Name: SwiftShoes
+  m_EditorClassIdentifier: 
+  itemName: Swift Shoes
+  itemDescription: +Move Speed, +Lunge Force
+  nameColor: {r: 0.32599998, g: 0.1840941, b: 0.08437646, a: 1}
+  descriptionColor: {r: 0.66, g: 0.5275672, b: 0.4356, a: 1}
+  waveTextAmplitude: 0
+  waveTextSpeed: 0
+  waveTextWaveLength: 0
+  physicalModel:
+  - {fileID: 6789345763602476681, guid: 3a86e5ffb9fa2374ab4431e753879eb5, type: 3}
+  - {fileID: 9106667989648027744, guid: 27f68cd09a08a284b9bf12c92d1ae105, type: 3}
+  modelParentName:
+  - Player Left Foot
+  - Player Right Foot
+  physicalModelPos:
+  - {x: -0.0197, y: -0.0003, z: 0.0009}
+  - {x: 0.0107, y: 0, z: 0.0002}
+  physicalModelRot:
+  - {x: 80.26609, y: 204.22688, z: 204.42813}
+  - {x: 87.363594, y: 6.488035, z: 6.359533}
+  physicalModelScale:
+  - {x: 0.813784, y: 0.7408708, z: 0.6}
+  - {x: 0.813784, y: 0.7408708, z: 0.6}
+  itemRarity: 1
+  sellPrice: 50
+  luck: 0
+  moveSpeed: 1
+  jumpForce: 0
+  lungeForce: 1
+  regenSpeed: 0
+  maxHealth: 0
+  healthRegenerated: 0
