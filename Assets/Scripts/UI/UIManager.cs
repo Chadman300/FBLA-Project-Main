@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
 {
     [Header("Debug Menu UI")]
     [SerializeField] private GameObject debugMenu;
+    [SerializeField] private Transform prisonerPoint;
+    [SerializeField] private Transform shopKeeperPoint;
 
     [Header("Settings UI")]
     [SerializeField] private SettingsManager settingsManager;
@@ -63,7 +65,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text defenseTextText;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text currencyText;
+    [Space]
+    [SerializeField] private TMP_Text leftHandItem;
+    [SerializeField] private TMP_Text leftHandDmg;
+    [Space]
+    [SerializeField] private TMP_Text rightHandItem;
+    [SerializeField] private TMP_Text rightHandDmg;
 
+    [Header("Misc")]
+    [SerializeField] private BuyableItem[] buyableItems;
     private SaveValues saveValues;
 
     private void OnEnable()
@@ -97,14 +107,30 @@ public class UIManager : MonoBehaviour
         DontDestroyOnLoad(newObj);
 
         var oldSaved = FindAnyObjectByType<SaveValues>();
-        if(oldSaved != null)
+
+        //create new save
+        saveValues = newObj.AddComponent<SaveValues>();
+        saveValues.hasBeenBought = new bool[buyableItems.Length];
+
+        //transfer old saved values
+        if (oldSaved != null)
         {
+            //buyale items
+            for(int i = 0; i < oldSaved.hasBeenBought.Length; i++)
+            {
+                var curBought = oldSaved.hasBeenBought[i];
+                saveValues.hasBeenBought[i] = curBought;
+
+                if(curBought)
+                {
+                    buyableItems[i].ForceBuyItem();
+                }
+            }
+
             playerController.ragdollValues.money = oldSaved.savedMoney;
             playerController.ragdollValues.savedPrisoner = oldSaved.savedPrisonerStatus;
             Destroy(oldSaved.gameObject);
         }
-
-        saveValues = newObj.AddComponent<SaveValues>();
     }
 
     private void Update()
@@ -122,7 +148,73 @@ public class UIManager : MonoBehaviour
             }
         }
 
+        //check if item has been bought and edit saved
+        for(int i = 0; i < buyableItems.Length; i++)
+        {
+            if (buyableItems[i].hasBeenBought)
+            {
+                saveValues.hasBeenBought[i] = true;
+            }
+        }
+
+        UpdateItemInfoUI();
+
         UpdatePlayerStats();
+    }
+
+    private void UpdateItemInfoUI()
+    {
+        //left hand
+        if (playerController.leftHandHasItem)
+        {
+            leftHandItem.text = $"Item: {playerController.leftHandItemObj.name}";
+
+            float handDMG = 0;
+
+            //try get dmg
+            if (playerController.leftHandItemObj.TryGetComponent<MeeleWeapon>(out var meeleWeapon))
+            {
+                handDMG = meeleWeapon.attackDamage;
+            }
+            else if (playerController.leftHandItemObj.TryGetComponent<GunController>(out var gunController))
+            {
+                handDMG = (gunController.damage.x + gunController.damage.y) / 2;
+            }
+
+            leftHandDmg.text = $"DMG: {handDMG}";
+        }
+        else
+        {
+            leftHandItem.text = "Item: Fist";
+            leftHandDmg.text = $"DMG: {playerController.limbAttackDamage}";
+        }
+
+        //righthand
+        if (playerController.rightHandHasItem)
+        {
+            float handDMG = 0;
+            string name = "";
+
+            //try get dmg & name
+            if (playerController.rightHandItemObj.TryGetComponent<MeeleWeapon>(out var meeleWeapon))
+            {
+                handDMG = meeleWeapon.attackDamage;
+                name = meeleWeapon.name;
+            }
+            else if (playerController.rightHandItemObj.TryGetComponent<GunController>(out var gunController))
+            {
+                handDMG = (gunController.damage.x + gunController.damage.y) / 2;
+                name = gunController.name;
+            }
+
+            rightHandItem.text = $"Item: {name}";
+            rightHandDmg.text = $"DMG: {handDMG}";
+        }
+        else
+        {
+            rightHandItem.text = "Item: Fist";
+            rightHandDmg.text = $"DMG: {playerController.limbAttackDamage}";
+        }
     }
 
     private void FixedUpdate()
@@ -298,5 +390,43 @@ public class UIManager : MonoBehaviour
         StartCoroutine(LoadSceneASync("Main Menu"));
         deadMenu.SetActive(false);
         ResumeGame();
+    }
+
+    public void TeleportPlayerToPrisoner()
+    {
+        //Change Position
+        playerController.hipsRb.transform.position = prisonerPoint.position;
+
+        if ((playerController.rightHandHasGun || playerController.rightHandHasItem) && playerController.rightHandItemObj != null)
+        {
+            playerController.rightHandItemObj.transform.position = prisonerPoint.position;
+        }
+
+        if ((playerController.leftHandHasGun || playerController.leftHandHasItem) && playerController.leftHandItemObj != null)
+        {
+            playerController.leftHandItemObj.transform.position = prisonerPoint.position;
+        }
+
+        //Feedback
+        playerController.teleportFeedback?.PlayFeedbacks();
+    }
+
+    public void TeleportPlayerToKeeper()
+    {
+        //Change Position
+        playerController.hipsRb.transform.position = shopKeeperPoint.position;
+
+        if ((playerController.rightHandHasGun || playerController.rightHandHasItem) && playerController.rightHandItemObj != null)
+        {
+            playerController.rightHandItemObj.transform.position = shopKeeperPoint.position;
+        }
+
+        if ((playerController.leftHandHasGun || playerController.leftHandHasItem) && playerController.leftHandItemObj != null)
+        {
+            playerController.leftHandItemObj.transform.position = shopKeeperPoint.position;
+        }
+
+        //Feedback
+        playerController.teleportFeedback?.PlayFeedbacks();
     }
 }

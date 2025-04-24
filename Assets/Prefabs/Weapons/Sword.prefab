@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canBePickedup: 1
+  name: Sword
   itemRarity: 1
   sellPrice: 200
   pickRotOffset: {x: 0, y: 0, z: 0}

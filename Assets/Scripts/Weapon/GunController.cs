@@ -9,6 +9,7 @@ public class GunController : MonoBehaviour
 {
     public bool canBePickedup = true;
     public bool isEquipt = false;
+    public string name = "";
 
     [Header("Values")]
     public int itemRarity = 1;
@@ -26,7 +27,7 @@ public class GunController : MonoBehaviour
     public Vector3 pickPosOffset = Vector3.zero;
     [Space]
     [SerializeField] private Rigidbody gunRb;
-    [SerializeField] private Vector2 damage;
+    public Vector2 damage;
     [SerializeField] private LayerMask hitMask;
     [SerializeField] private float fireRate = 0.25f;
     [SerializeField] private float maxRaycastDistance = float.MaxValue;

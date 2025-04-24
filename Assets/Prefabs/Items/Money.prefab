@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbde1b0f00f648e4891676e596bb2060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rarity: 15
+  rarity: 1
   moneyGained: 100
   values: {fileID: 0}
   pickUpFeedBack: {fileID: 468931167232863375}

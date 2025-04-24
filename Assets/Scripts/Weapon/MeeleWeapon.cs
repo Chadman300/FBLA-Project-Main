@@ -4,6 +4,7 @@ using UnityEngine;
 public class MeeleWeapon : MonoBehaviour
 {
     public bool canBePickedup = true;
+    public string name = "";
 
     [Header("Values")]
     public int itemRarity = 1;

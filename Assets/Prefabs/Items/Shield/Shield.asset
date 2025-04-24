@@ -38,5 +38,5 @@ MonoBehaviour:
   regenSpeed: 0
   maxHealth: 0
   damage: 0
-  defense: 0.5
+  defense: 0.75
   healthRegenerated: 0

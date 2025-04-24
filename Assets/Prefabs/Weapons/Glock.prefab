@@ -6109,6 +6109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canBePickedup: 1
   isEquipt: 0
+  name: Glock
   itemRarity: 2
   sellPrice: 1
   shootFeedback: {fileID: 7001603085902868224}
@@ -6139,8 +6140,8 @@ MonoBehaviour:
   adsFov: 5
   isHitScan: 1
   bulletSpawn: {fileID: 1216959553755186026}
-  maxAmmo: 100
-  currentAmmo: 100
+  maxAmmo: 2147483647
+  currentAmmo: 2147483647
   isAds: 0
   hasLaser: 0
   laserItem: {fileID: 11400000, guid: 7dc0c72d9bcfdda44a162de5eca24b90, type: 2}

@@ -124,6 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canBePickedup: 1
+  name: Axe
   itemRarity: 1
   sellPrice: 100
   pickRotOffset: {x: 0, y: 0, z: 0}
